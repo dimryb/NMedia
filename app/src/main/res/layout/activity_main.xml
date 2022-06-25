@@ -10,21 +10,24 @@
         android:id="@+id/avatarImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="@dimen/post_avatar_size"
+        android:layout_marginTop="@dimen/post_avatar_size"
+        android:layout_marginBottom="@dimen/post_avatar_size"
         android:contentDescription="@string/description_post_author_avatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/headerTitleBarrier"
         app:srcCompat="@drawable/posts_avatars" />
 
     <TextView
         android:id="@+id/authorTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/common_spacing"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="@color/post_color"
         app:layout_constraintBottom_toTopOf="@id/publishedTextView"
         app:layout_constraintEnd_toStartOf="@+id/menuImageView"
         app:layout_constraintStart_toEndOf="@id/avatarImageView"
@@ -35,9 +38,11 @@
         android:id="@+id/publishedTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/common_spacing"
+        android:layout_marginEnd="@dimen/common_spacing"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="@color/post_color"
         app:layout_constraintBottom_toBottomOf="@+id/avatarImageView"
         app:layout_constraintTop_toBottomOf="@+id/authorTextView"
         app:layout_constraintStart_toEndOf="@id/avatarImageView"
@@ -47,13 +52,103 @@
         android:id="@+id/menuImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/menu_margin_size"
+        android:layout_marginTop="@dimen/menu_margin_size"
         android:contentDescription="@string/description_menu"
         android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_dots_three_vertical_icon"
          />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/headerTitleBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="avatarImageView,publishedTextView,menuImageView"
+        tools:layout_editor_absoluteY="80dp" />
+
+    <TextView
+        android:id="@+id/postTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_spacing"
+        android:lineSpacingExtra="6dp"
+        android:textColor="@color/post_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerTitleBarrier"
+        app:layout_constraintBottom_toTopOf="@id/bottomBarrier"
+        tools:text="@sample/posts.json/data/content"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bottomBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="postTextView" />
+
+    <ImageView
+        android:id="@+id/likesImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_spacing"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        app:srcCompat="@drawable/ic_likes" />
+
+    <TextView
+        android:id="@+id/likesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/index_spacing"
+        android:textColor="@color/post_color"
+        android:layout_marginTop="@dimen/common_spacing"
+        app:layout_constraintStart_toEndOf="@+id/likesImageView"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        tools:text="10" />
+
+    <ImageView
+        android:id="@+id/shareImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_spacing"
+        android:layout_marginStart="45dp"
+        app:srcCompat="@drawable/ic_share"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        app:layout_constraintStart_toEndOf="@id/likesImageView"/>
+
+    <TextView
+        android:id="@+id/shareTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_spacing"
+        android:textColor="@color/post_color"
+        android:layout_marginStart="@dimen/index_spacing"
+        app:layout_constraintStart_toEndOf="@+id/shareImageView"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        tools:text="5" />
+
+    <ImageView
+        android:id="@+id/viewsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_spacing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        android:layout_marginEnd="70dp"
+        app:srcCompat="@drawable/ic_views" />
+
+    <TextView
+        android:id="@+id/viewsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/post_color"
+        android:layout_marginTop="@dimen/common_spacing"
+        android:layout_marginStart="@dimen/index_spacing"
+        app:layout_constraintStart_toEndOf="@+id/viewsImageView"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+        tools:text="500K" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
