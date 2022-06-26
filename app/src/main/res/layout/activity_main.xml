@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.MainActivity">
 
     <ImageView
         android:id="@+id/avatarImageView"
@@ -96,7 +96,7 @@
         android:layout_margin="@dimen/common_spacing"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
-        app:srcCompat="@drawable/ic_likes" />
+        app:srcCompat="@drawable/ic_like" />
 
     <TextView
         android:id="@+id/likesTextView"
