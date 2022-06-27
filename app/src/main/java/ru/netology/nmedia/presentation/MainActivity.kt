@@ -8,6 +8,9 @@ import ru.netology.nmedia.domain.Post
 
 class MainActivity : AppCompatActivity() {
 
+    private val model: Model by lazy {
+        Model()
+    }
     private lateinit var binding: ActivityMainBinding
     private var post = Post(
         author = "Нетология. Университет интернет-профессий",
@@ -28,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setContent(post)
         setupClickListeners()
     }
@@ -38,11 +40,11 @@ class MainActivity : AppCompatActivity() {
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            shareTextView.text = counterCompression(post.sharedCount)
-            viewsTextView.text = post.viewCount.toString()
+            likesTextView.text = model.calcLickedCounter(post.likesCount, post.liked)
+            shareTextView.text = model.counterCompression(post.sharedCount)
+            viewsTextView.text = model.counterCompression(post.viewCount)
         }
         setLikedResource(post.liked)
-        setLikedCounter(post.likesCount, post.liked)
     }
 
     private fun setLikedResource(isLiked: Boolean) {
@@ -55,40 +57,19 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun setLikedCounter(counter: Int, isLiked: Boolean) {
-        val newCount = counter + if (isLiked) 1 else 0
-        binding.likesTextView.text = newCount.toString()
-    }
-
     private fun setupClickListeners() {
         with(binding) {
             likesImageView.setOnClickListener {
                 post = post.copy(liked = !post.liked)
                 setLikedResource(post.liked)
-                setLikedCounter(post.likesCount, post.liked)
+                binding.likesTextView.text = model.calcLickedCounter(post.likesCount, post.liked)
             }
             shareImageView.setOnClickListener {
                 post = post.copy(sharedCount = post.sharedCount + 1)
-                shareTextView.text = counterCompression(post.sharedCount)
+                shareTextView.text = model.counterCompression(post.sharedCount)
             }
         }
     }
 
-    private fun counterCompressionThousands(counter: Int): String{
-        val thousands = counter/1000
-        val hundreds = (counter - thousands * 1000)/100
-        return if (hundreds == 0){
-            "${thousands}K"
-        }else{
-            "${thousands}.${hundreds}K"
-        }
-    }
 
-    private fun counterCompression(counter: Int): String {
-        return when {
-            counter < 1000 -> counter.toString()
-            counter in 1000..9999 -> counterCompressionThousands(counter)
-            else -> "0"
-        }
-    }
 }
