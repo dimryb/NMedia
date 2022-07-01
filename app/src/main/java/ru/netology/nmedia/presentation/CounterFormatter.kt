@@ -1,8 +1,6 @@
 package ru.netology.nmedia.presentation
 
-class Model {
-
-    private var likesCount = ""
+class CounterFormatter {
 
     private fun counterCompressionFraction(counter: Long, divider: Int, suffix: String): String {
         val thousands = counter / divider
@@ -30,11 +28,6 @@ class Model {
             )
             else -> "${counter / COUNTER_DIVIDER_M}${SUFFIX_M}"
         }
-    }
-
-    fun calcLickedCounter(counter: Long, isLiked: Boolean): String {
-        val newCount = counter + if (isLiked) 1 else 0
-        return counterCompression(newCount)
     }
 
     companion object {

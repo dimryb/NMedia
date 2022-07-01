@@ -2,37 +2,31 @@ package ru.netology.nmedia.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.domain.Post
 
 class MainActivity : AppCompatActivity() {
 
-    private val model: Model by lazy {
-        Model()
+    private val model: CounterFormatter by lazy {
+        CounterFormatter()
     }
     private lateinit var binding: ActivityMainBinding
-    private var post = Post(
-        author = "Нетология. Университет интернет-профессий",
-        authorAvatar = "",
-        published = "24 июня в 21:11",
-        content = """Привет, это новая нетология! когда-то Нетология начиналась с интенсивов по 
-                |онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и 
-                |управлению. Мы растем сами и помогаем расти студентам: от новичков до уверенный 
-                |профессионалов. Но самое важное остается с нами: мы верим, что в каждом уже есть 
-                |сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия 
-                |- помочь встать на путь роста и начать цепочку перемен""".trimMargin(),
-        likesCount = 10,
-        sharedCount = 1099,
-        viewCount = 5,
-    )
+    private val viewModel: PostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setContent(post)
+        observeViewModel()
         setupClickListeners()
+    }
+
+    private fun observeViewModel() {
+        viewModel.data.observe(this) { post ->
+            setContent(post)
+        }
     }
 
     private fun setContent(post: Post) {
@@ -40,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            likesTextView.text = model.calcLickedCounter(post.likesCount, post.liked)
+            likesTextView.text = post.likesCount.toString()
             shareTextView.text = model.counterCompression(post.sharedCount)
             viewsTextView.text = model.counterCompression(post.viewCount)
         }
@@ -59,15 +53,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         with(binding) {
-            likesImageView.setOnClickListener {
-                post = post.copy(liked = !post.liked)
-                setLikedResource(post.liked)
-                binding.likesTextView.text = model.calcLickedCounter(post.likesCount, post.liked)
-            }
-            shareImageView.setOnClickListener {
-                post = post.copy(sharedCount = post.sharedCount + 1)
-                shareTextView.text = model.counterCompression(post.sharedCount)
-            }
+            likesImageView.setOnClickListener { viewModel.like() }
+            shareImageView.setOnClickListener { viewModel.share() }
         }
     }
 
