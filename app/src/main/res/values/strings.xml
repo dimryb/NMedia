@@ -3,4 +3,5 @@
     <string name="nmedia">NMedia!</string>
     <string name="description_post_author_avatar">Author avatar</string>
     <string name="description_menu">Menu</string>
+    <string name="option_menu_remove">Remove</string>
 </resources>

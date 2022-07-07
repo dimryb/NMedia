@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onRemove(post: Post) {
-            TODO("Not yet implemented")
+            viewModel.removeById(post.id)
         }
     })
 

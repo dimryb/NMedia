@@ -1,5 +1,7 @@
 package ru.netology.nmedia.presentation
 
+import android.view.View
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -47,7 +49,24 @@ class PostViewHolder(
         with(cardPostBinding) {
             likesImageView.setOnClickListener { onInteractionListener.onLike(post) }
             shareImageView.setOnClickListener { onInteractionListener.onShare(post) }
+
+            menuImageView.setOnClickListener { setupPopupMenu(it, post) }
         }
+    }
+
+    private fun setupPopupMenu(view: View, post: Post){
+        PopupMenu(view.context, view).apply {
+            inflate(R.menu.options_post)
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.remove -> {
+                        onInteractionListener.onRemove(post)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }.show()
     }
 }
 
