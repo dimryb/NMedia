@@ -12,9 +12,23 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: PostViewModel by viewModels()
-    private val likeCallback = { post: Post -> viewModel.like(post.id) }
-    private val shareCallback = { post: Post -> viewModel.share(post.id) }
-    private val adapter = PostAdapter(likeCallback, shareCallback)
+    private val adapter = PostAdapter(object : OnInteractionListener{
+        override fun onLike(post: Post) {
+            viewModel.like(post.id)
+        }
+
+        override fun onShare(post: Post) {
+            viewModel.share(post.id)
+        }
+
+        override fun onEdit(post: Post) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onRemove(post: Post) {
+            TODO("Not yet implemented")
+        }
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

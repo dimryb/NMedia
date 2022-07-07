@@ -7,8 +7,7 @@ import ru.netology.nmedia.domain.Post
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onLikeListener: OnLikeListener,
-    private val onShareListener: OnShareListener
+    private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val formatter: CounterFormatter by lazy {
@@ -46,8 +45,8 @@ class PostViewHolder(
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {
         with(cardPostBinding) {
-            likesImageView.setOnClickListener { onLikeListener(post) }
-            shareImageView.setOnClickListener { onShareListener(post) }
+            likesImageView.setOnClickListener { onInteractionListener.onLike(post) }
+            shareImageView.setOnClickListener { onInteractionListener.onShare(post) }
         }
     }
 }
