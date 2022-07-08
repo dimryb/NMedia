@@ -5,4 +5,6 @@
     <string name="description_post_author_avatar">Аватар автора</string>
     <string name="description_menu">Меню</string>
     <string name="option_menu_remove">Удалить</string>
+    <string name="post_input_hint">Текст поста</string>
+    <string name="empty_post_error">Пост пустой</string>
 </resources>

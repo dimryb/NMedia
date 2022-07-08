@@ -2,11 +2,12 @@ package ru.netology.nmedia.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
-import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.util.AndroidUtils
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +36,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         observeViewModel()
+
+        binding.save.setOnClickListener {
+            if (binding.content.text.isNullOrBlank()) {
+                Toast.makeText(it.context, getString(R.string.empty_post_error), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val text = binding.content.text.toString()
+
+            viewModel.editContent(text)
+            viewModel.save()
+
+            binding.content.clearFocus()
+            AndroidUtils.hideKeyboard(binding.content)
+            binding.content.setText("")
+        }
     }
 
     private fun observeViewModel() {
