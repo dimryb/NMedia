@@ -6,4 +6,5 @@
     <string name="option_menu_remove">Remove</string>
     <string name="post_input_hint">Post text</string>
     <string name="empty_post_error">Post is blank</string>
+    <string name="option_menu_edit">Edit</string>
 </resources>

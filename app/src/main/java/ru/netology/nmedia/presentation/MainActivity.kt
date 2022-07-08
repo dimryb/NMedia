@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: PostViewModel by viewModels()
-    private val adapter = PostAdapter(object : OnInteractionListener{
+    private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
             viewModel.like(post.id)
         }
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onEdit(post: Post) {
-            TODO("Not yet implemented")
+            viewModel.edit(post)
         }
 
         override fun onRemove(post: Post) {
@@ -36,10 +36,28 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         observeViewModel()
+        setupClickListeners()
+    }
 
+    private fun observeViewModel() {
+        binding.postsList.adapter = adapter
+        viewModel.data.observe(this) { posts ->
+            adapter.submitList(posts)
+        }
+        viewModel.edited.observe(this) { edited ->
+            if (edited.id == 0L){
+                return@observe
+            }
+            binding.content.setText(edited.content)
+            binding.content.requestFocus()
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.save.setOnClickListener {
             if (binding.content.text.isNullOrBlank()) {
-                Toast.makeText(it.context, getString(R.string.empty_post_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(it.context, getString(R.string.empty_post_error), Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
@@ -53,13 +71,4 @@ class MainActivity : AppCompatActivity() {
             binding.content.setText("")
         }
     }
-
-    private fun observeViewModel() {
-        binding.postsList.adapter = adapter
-        viewModel.data.observe(this) { posts ->
-            adapter.submitList(posts)
-        }
-    }
-
-
 }
