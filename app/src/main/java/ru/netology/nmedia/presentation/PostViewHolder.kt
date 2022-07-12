@@ -28,7 +28,7 @@ class PostViewHolder(
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            likesTextView.text = post.likesCount.toString()
+            likesImageView.text = post.likesCount.toString()
             shareTextView.text = formatter.counterCompression(post.sharedCount)
             viewsTextView.text = formatter.counterCompression(post.viewCount)
         }
@@ -36,13 +36,7 @@ class PostViewHolder(
     }
 
     private fun setLikedResource(cardPostBinding: CardPostBinding, isLiked: Boolean) {
-        cardPostBinding.likesImageView.setImageResource(
-            if (isLiked) {
-                R.drawable.ic_liked
-            } else {
-                R.drawable.ic_like
-            }
-        )
+        cardPostBinding.likesImageView.isChecked = isLiked
     }
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {
