@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Widget.AppTheme.LikeCheckBox"
+
+    <style name="Widget.AppTheme.Button"
         parent="Widget.MaterialComponents.Button.TextButton.Icon">
-        <item name="iconTint">@color/like_checkbox_tint</item>
         <item name="android:minWidth">@dimen/icon_button_min_size</item>
         <item name="android:minHeight">@dimen/icon_button_min_size</item>
+        <item name="android:textColor">?attr/colorControlNormal</item>
+        <item name="iconTint">?attr/colorControlNormal</item>
+    </style>
+
+    <style name="Widget.AppTheme.CounterButton"
+        parent="Widget.AppTheme.Button">
+        <item name="android:minWidth">@dimen/icon_button_min_width</item>
+        <item name="android:minHeight">@dimen/icon_button_min_height</item>
+    </style>
+
+    <style name="Widget.AppTheme.CounterButton.Like"
+        parent="Widget.AppTheme.CounterButton">
+        <item name="iconTint">@color/like_checkbox_tint</item>
+    </style>
+
+    <style name="Widget.AppTheme.CounterButton.Share"
+        parent="Widget.AppTheme.CounterButton">
+    </style>
+
+    <style name="Widget.AppTheme.CounterButton.View"
+        parent="Widget.AppTheme.CounterButton">
+    </style>
+
+    <style name="Widget.AppTheme.Button.Options"
+        parent="Widget.AppTheme.Button">
     </style>
 
 </resources>

@@ -28,23 +28,21 @@ class PostViewHolder(
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            likesImageView.text = post.likesCount.toString()
-            shareTextView.text = formatter.counterCompression(post.sharedCount)
-            viewsTextView.text = formatter.counterCompression(post.viewCount)
+            likesButton.text = post.likesCount.toString()
+            likesButton.isChecked = post.likedByMe
+            shareButton.text = formatter.counterCompression(post.sharedCount)
+            viewsButton.text = formatter.counterCompression(post.viewCount)
+
         }
-        setLikedResource(cardPostBinding, post.likedByMe)
     }
 
-    private fun setLikedResource(cardPostBinding: CardPostBinding, isLiked: Boolean) {
-        cardPostBinding.likesImageView.isChecked = isLiked
-    }
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {
         with(cardPostBinding) {
-            likesImageView.setOnClickListener { onInteractionListener.onLike(post) }
-            shareImageView.setOnClickListener { onInteractionListener.onShare(post) }
+            likesButton.setOnClickListener { onInteractionListener.onLike(post) }
+            shareButton.setOnClickListener { onInteractionListener.onShare(post) }
 
-            menuImageView.setOnClickListener { setupPopupMenu(it, post) }
+            menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
     }
 

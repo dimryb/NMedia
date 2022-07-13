@@ -6,4 +6,6 @@
     <dimen name="index_spacing">10dp</dimen>
     <dimen name="common_spacing_small">8dp</dimen>
     <dimen name="icon_button_min_size">24dp</dimen>
+    <dimen name="icon_button_min_height">@dimen/icon_button_min_size</dimen>
+    <dimen name="icon_button_min_width">88dp</dimen>
 </resources>
