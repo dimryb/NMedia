@@ -8,4 +8,7 @@
     <string name="post_input_hint">Текст поста</string>
     <string name="empty_post_error">Пост пустой</string>
     <string name="option_menu_edit">Изменить</string>
+    <string name="description_post_like">Лайк</string>
+    <string name="description_post_share">Поделиться</string>
+    <string name="description_post_view">Посмотрело</string>
 </resources>
