@@ -8,6 +8,7 @@ import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
+import ru.netology.nmedia.repository.PostRepositorySharedPrefsImpl
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -20,7 +21,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         published = ""
     )
 
-    private val repository: PostRepository = PostRepositoryFileImpl(application)
+    private val repository: PostRepository = PostRepositorySharedPrefsImpl(application)
     val data = repository.get()
     val edited = MutableLiveData(empty)
 
