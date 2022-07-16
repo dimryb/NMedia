@@ -16,6 +16,8 @@ class NewPostActivity : AppCompatActivity() {
         binding = ActivityNewPostBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.contentEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT))
+
         setupClickListeners()
     }
 

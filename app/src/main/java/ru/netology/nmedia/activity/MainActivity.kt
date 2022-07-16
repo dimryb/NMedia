@@ -7,15 +7,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.presentation.NewPostActivityContract
-import ru.netology.nmedia.presentation.OnInteractionListener
-import ru.netology.nmedia.presentation.PostAdapter
-import ru.netology.nmedia.presentation.PostViewModel
+import ru.netology.nmedia.presentation.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var newPostLauncher: ActivityResultLauncher<Unit>
+    private lateinit var editPostLauncher: ActivityResultLauncher<String>
     private val viewModel: PostViewModel by viewModels()
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
@@ -35,15 +33,17 @@ class MainActivity : AppCompatActivity() {
         }
     })
 
+    private fun editCallback(text: String?){
+        text ?: return
+        viewModel.editContent(text)
+        viewModel.save()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-
-        newPostLauncher = registerForActivityResult(NewPostActivityContract()) { text ->
-            text ?: return@registerForActivityResult
-            viewModel.editContent(text)
-            viewModel.save()
-        }
+        newPostLauncher = registerForActivityResult(NewPostActivityContract(), ::editCallback)
+        editPostLauncher = registerForActivityResult(EditPostActivityContract(), ::editCallback)
 
         setContentView(binding.root)
         observeViewModel()
@@ -59,8 +59,7 @@ class MainActivity : AppCompatActivity() {
             if (edited.id == 0L){
                 return@observe
             }
-//            binding.content.setText(edited.content)
-//            binding.content.requestFocus()
+            editPostLauncher.launch(edited.content)
         }
     }
 
