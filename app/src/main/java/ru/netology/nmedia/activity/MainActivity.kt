@@ -1,5 +1,7 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
@@ -31,9 +33,13 @@ class MainActivity : AppCompatActivity() {
         override fun onRemove(post: Post) {
             viewModel.removeById(post.id)
         }
+
+        override fun onMedia(post: Post) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+        }
     })
 
-    private fun editCallback(text: String?){
+    private fun editCallback(text: String?) {
         text ?: return
         viewModel.editContent(text)
         viewModel.save()
@@ -56,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(posts)
         }
         viewModel.edited.observe(this) { edited ->
-            if (edited.id == 0L){
+            if (edited.id == 0L) {
                 return@observe
             }
             editPostLauncher.launch(edited.content)
@@ -64,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        binding.createButton.setOnClickListener{
+        binding.createButton.setOnClickListener {
             newPostLauncher.launch()
         }
     }
