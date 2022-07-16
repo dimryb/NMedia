@@ -11,4 +11,5 @@
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
     <string name="description_post_view">View</string>
+    <string name="media_image">Media Image</string>
 </resources>

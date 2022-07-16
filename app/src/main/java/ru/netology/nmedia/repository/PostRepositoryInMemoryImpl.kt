@@ -7,6 +7,18 @@ import ru.netology.nmedia.domain.Post
 class PostRepositoryInMemoryImpl : PostRepository {
     private var posts = listOf(
         Post(
+            id = 3,
+            author = "Нетология. Университет интернет-профессий",
+            authorAvatar = "",
+            published = "16 июля в 18:20",
+            content = """Пост с иллюстрацией в медиа
+                    |""".trimMargin(),
+            likesCount = 5,
+            sharedCount = 7,
+            viewCount = 367,
+            video = "video"
+        ),
+        Post(
             id = 2,
             author = "Нетология. Университет интернет-профессий",
             authorAvatar = "",
