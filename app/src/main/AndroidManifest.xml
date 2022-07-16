@@ -12,7 +12,8 @@
 
         <activity
             android:name=".activity.NewPostActivity"
-            android:exported="false">
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
             android:name=".activity.MainActivity"
