@@ -33,6 +33,15 @@ class PostViewHolder(
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
+            if (post.video.isNullOrBlank()) {
+                mediaImageView.setImageResource(0)
+                mediaTextView.text = null
+                media.visibility = View.GONE
+            } else {
+                mediaImageView.setImageResource(R.mipmap.media)
+                mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
+                media.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -41,12 +50,13 @@ class PostViewHolder(
         with(cardPostBinding) {
             likesButton.setOnClickListener { onInteractionListener.onLike(post) }
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
+            media.setOnClickListener { onInteractionListener.onMedia(post) }
 
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
     }
 
-    private fun setupPopupMenu(view: View, post: Post){
+    private fun setupPopupMenu(view: View, post: Post) {
         PopupMenu(view.context, view).apply {
             inflate(R.menu.options_post)
             setOnMenuItemClickListener { item ->

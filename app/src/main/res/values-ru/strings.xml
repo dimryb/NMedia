@@ -11,4 +11,6 @@
     <string name="description_post_like">Лайк</string>
     <string name="description_post_share">Поделиться</string>
     <string name="description_post_view">Посмотрело</string>
+    <string name="empty_content_error">Нет содержимого</string>
+    <string name="media_image">Иллюстрация медиа</string>
 </resources>

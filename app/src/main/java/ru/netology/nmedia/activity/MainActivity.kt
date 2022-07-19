@@ -1,17 +1,21 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.activity
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.launch
 import androidx.activity.viewModels
-import ru.netology.nmedia.R
+import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.presentation.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var newPostLauncher: ActivityResultLauncher<Unit>
+    private lateinit var editPostLauncher: ActivityResultLauncher<String>
     private val viewModel: PostViewModel by viewModels()
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
@@ -29,11 +33,24 @@ class MainActivity : AppCompatActivity() {
         override fun onRemove(post: Post) {
             viewModel.removeById(post.id)
         }
+
+        override fun onMedia(post: Post) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+        }
     })
+
+    private fun editCallback(text: String?) {
+        text ?: return
+        viewModel.editContent(text)
+        viewModel.save()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        newPostLauncher = registerForActivityResult(NewPostActivityContract(), ::editCallback)
+        editPostLauncher = registerForActivityResult(EditPostActivityContract(), ::editCallback)
+
         setContentView(binding.root)
         observeViewModel()
         setupClickListeners()
@@ -45,30 +62,16 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(posts)
         }
         viewModel.edited.observe(this) { edited ->
-            if (edited.id == 0L){
+            if (edited.id == 0L) {
                 return@observe
             }
-            binding.content.setText(edited.content)
-            binding.content.requestFocus()
+            editPostLauncher.launch(edited.content)
         }
     }
 
     private fun setupClickListeners() {
-        binding.save.setOnClickListener {
-            if (binding.content.text.isNullOrBlank()) {
-                Toast.makeText(it.context, getString(R.string.empty_post_error), Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
-
-            val text = binding.content.text.toString()
-
-            viewModel.editContent(text)
-            viewModel.save()
-
-            binding.content.clearFocus()
-            AndroidUtils.hideKeyboard(binding.content)
-            binding.content.setText("")
+        binding.createButton.setOnClickListener {
+            newPostLauncher.launch()
         }
     }
 }

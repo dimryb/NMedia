@@ -6,8 +6,10 @@
     <string name="option_menu_remove">Remove</string>
     <string name="post_input_hint">Post text</string>
     <string name="empty_post_error">Post is blank</string>
+    <string name="empty_content_error">Content is blank</string>
     <string name="option_menu_edit">Edit</string>
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
     <string name="description_post_view">View</string>
+    <string name="media_image">Media Image</string>
 </resources>

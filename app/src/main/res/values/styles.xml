@@ -32,4 +32,9 @@
         parent="Widget.AppTheme.Button">
     </style>
 
+    <style name="Widget.AppTheme.TextView.Link"
+        parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/link</item>
+    </style>
+
 </resources>
