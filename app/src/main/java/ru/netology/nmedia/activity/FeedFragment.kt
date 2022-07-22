@@ -3,11 +3,10 @@ package ru.netology.nmedia.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.launch
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,7 +14,9 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.presentation.*
+import ru.netology.nmedia.presentation.OnInteractionListener
+import ru.netology.nmedia.presentation.PostAdapter
+import ru.netology.nmedia.presentation.PostViewModel
 
 class FeedFragment : Fragment() {
 
@@ -23,9 +24,9 @@ class FeedFragment : Fragment() {
     private val binding: FragmentFeedBinding
         get() = _binding ?: throw RuntimeException("FragmentFeedBinding == null!")
 
-    //private lateinit var newPostLauncher: ActivityResultLauncher<Unit>
-    //private lateinit var editPostLauncher: ActivityResultLauncher<String>
-    private val viewModel: PostViewModel by viewModels()
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
             viewModel.like(post.id)
@@ -37,6 +38,7 @@ class FeedFragment : Fragment() {
 
         override fun onEdit(post: Post) {
             viewModel.edit(post)
+            launchEditPost()
         }
 
         override fun onRemove(post: Post) {
@@ -47,12 +49,6 @@ class FeedFragment : Fragment() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
         }
     })
-
-    private fun editCallback(text: String?) {
-        text ?: return
-        viewModel.editContent(text)
-        viewModel.save()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,32 +65,6 @@ class FeedFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        loadArguments()
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState)
-        } else {
-            initState()
-        }
-    }
-
-    private fun loadArguments() {
-        arguments?.let {
-
-        }
-    }
-
-    private fun restoreState(savedInstanceState: Bundle) {
-        savedInstanceState.apply {
-
-        }
-    }
-
-    private fun initState() {
-
-    }
-
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { posts ->
@@ -104,13 +74,6 @@ class FeedFragment : Fragment() {
             if (edited.id == 0L) {
                 return@observe
             }
-            //editPostLauncher.launch(edited.content)
-            findNavController().navigate(
-                R.id.action_feedFragment_to_newPostFragment,
-                Bundle().apply {
-                    textArg = edited.content
-                }
-            )
         }
     }
 
@@ -118,5 +81,17 @@ class FeedFragment : Fragment() {
         binding.createButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
+    }
+
+    private fun launchEditPost() {
+        findNavController()
+            .navigate(
+                R.id.action_feedFragment_to_newPostFragment,
+                Bundle().apply {
+                    viewModel.edited.value?.content.let {
+                        textArg = it
+                    }
+                }
+            )
     }
 }

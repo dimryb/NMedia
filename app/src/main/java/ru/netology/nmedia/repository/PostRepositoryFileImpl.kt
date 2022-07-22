@@ -56,15 +56,16 @@ class PostRepositoryFileImpl(
         ),
     )
 
-    private var nextId: Long = 3
+    private var nextId: Long = 0
     private var data = MutableLiveData(posts)
 
     init {
         val file = context.filesDir.resolve(filename)
-        if(file.exists()){
+        if (file.exists()) {
             context.openFileInput(filename).bufferedReader().use {
                 posts = gson.fromJson(it, type)
                 data.value = posts
+                nextId = 1 + posts.maxOf { post -> post.id }
             }
         } else {
             sync()
@@ -126,7 +127,7 @@ class PostRepositoryFileImpl(
         sync()
     }
 
-    private fun sync(){
+    private fun sync() {
         context.openFileOutput(filename, Context.MODE_PRIVATE).bufferedWriter().use {
             it.write(gson.toJson(posts))
         }
