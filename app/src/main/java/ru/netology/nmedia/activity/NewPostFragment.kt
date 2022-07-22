@@ -54,4 +54,11 @@ class NewPostFragment : Fragment() {
             findNavController().navigateUp()
         }
     }
+
+    companion object {
+        private const val TEXT_KEY = "TEXT_KEY"
+        var Bundle.textArg: String?
+            set(value) = putString(TEXT_KEY, value)
+            get() = getString(TEXT_KEY)
+    }
 }

@@ -18,5 +18,6 @@
         android:id="@+id/newPostFragment"
         android:name="ru.netology.nmedia.activity.NewPostFragment"
         android:label="fragment_new_post"
-        tools:layout="@layout/fragment_new_post" />
+        tools:layout="@layout/fragment_new_post">
+    </fragment>
 </navigation>

@@ -10,14 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NMedia">
 
-        <activity
-            android:name=".activity.NewPostFragment"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
-        <activity
-            android:name=".activity.FeedFragment"
+        <activity android:name=".activity.AppActivity"
             android:exported="true">
+            <nav-graph android:value="@navigation/nav_main"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

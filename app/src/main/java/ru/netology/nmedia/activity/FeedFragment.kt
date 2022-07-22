@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.*
@@ -63,15 +64,35 @@ class FeedFragment : Fragment() {
             container,
             false
         )
+        observeViewModel()
+        setupClickListeners()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //newPostLauncher = registerForActivityResult(NewPostActivityContract(), ::editCallback)
-        //editPostLauncher = registerForActivityResult(EditPostActivityContract(), ::editCallback)
-        observeViewModel()
-        setupClickListeners()
+        loadArguments()
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState)
+        } else {
+            initState()
+        }
+    }
+
+    private fun loadArguments() {
+        arguments?.let {
+
+        }
+    }
+
+    private fun restoreState(savedInstanceState: Bundle) {
+        savedInstanceState.apply {
+
+        }
+    }
+
+    private fun initState() {
+
     }
 
     private fun observeViewModel() {
@@ -84,6 +105,12 @@ class FeedFragment : Fragment() {
                 return@observe
             }
             //editPostLauncher.launch(edited.content)
+            findNavController().navigate(
+                R.id.action_feedFragment_to_newPostFragment,
+                Bundle().apply {
+                    textArg = edited.content
+                }
+            )
         }
     }
 
