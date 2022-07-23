@@ -1,39 +1,64 @@
 package ru.netology.nmedia.activity
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.FragmentDetailsBinding
+import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.presentation.CounterFormatter
 
 class DetailsFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+    private val args by navArgs<DetailsFragmentArgs>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-        }
+    private val formatter: CounterFormatter by lazy {
+        CounterFormatter()
     }
+
+    private var _binding: FragmentDetailsBinding? = null
+    private val binding: FragmentDetailsBinding
+        get() = _binding ?: throw RuntimeException("FragmentDetailsBinding == null")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_details, container, false)
+    ): View {
+        _binding = FragmentDetailsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailsFragment().apply {
-                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
+        setContent(args.post)
+    }
+
+    private fun setupClickListeners() {
+
+    }
+
+    private fun setContent(post: Post) {
+        with(binding) {
+            authorTextView.text = post.author
+            publishedTextView.text = post.published
+            postTextView.text = post.content
+            likesButton.text = post.likesCount.toString()
+            likesButton.isChecked = post.likedByMe
+            shareButton.text = formatter.counterCompression(post.sharedCount)
+            viewsButton.text = formatter.counterCompression(post.viewCount)
+
+            if (post.video.isNullOrBlank()) {
+                mediaImageView.setImageResource(0)
+                mediaTextView.text = null
+                media.visibility = View.GONE
+            } else {
+                mediaImageView.setImageResource(R.mipmap.media)
+                mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
+                media.visibility = View.VISIBLE
             }
+        }
     }
 }
