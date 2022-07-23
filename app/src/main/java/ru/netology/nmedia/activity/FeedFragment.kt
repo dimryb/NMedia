@@ -3,7 +3,6 @@ package ru.netology.nmedia.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +46,10 @@ class FeedFragment : Fragment() {
 
         override fun onMedia(post: Post) {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+        }
+
+        override fun onDetails(post: Post) {
+            findNavController().navigate(R.id.action_feedFragment_to_detailsFragment)
         }
     })
 

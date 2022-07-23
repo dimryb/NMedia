@@ -53,6 +53,7 @@ class PostViewHolder(
             media.setOnClickListener { onInteractionListener.onMedia(post) }
 
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
+            postLayout.setOnClickListener { onInteractionListener.onDetails(post) }
         }
     }
 
