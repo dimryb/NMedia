@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.CounterFormatter
@@ -45,6 +45,7 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners(args.post)
         setContent(args.post)
+        observeViewModel(args.post)
     }
 
     private fun setContent(post: Post) {
@@ -69,10 +70,22 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    private fun observeViewModel(post: Post) {
+        viewModel.data.observe(viewLifecycleOwner){
+            viewModel.data.value?.find { it.id == post.id }?.let {
+                setContent(it)
+            }
+        }
+    }
+
     private fun setupClickListeners(post: Post) {
         with(binding) {
-            likesButton.setOnClickListener { viewModel.like(post.id) }
-            shareButton.setOnClickListener { viewModel.share(post.id) }
+            likesButton.setOnClickListener {
+                viewModel.like(post.id)
+            }
+            shareButton.setOnClickListener {
+                viewModel.share(post.id)
+            }
             media.setOnClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
             }
