@@ -26,6 +26,7 @@ class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
+
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
             viewModel.like(post.id)
@@ -37,7 +38,6 @@ class FeedFragment : Fragment() {
 
         override fun onEdit(post: Post) {
             viewModel.edit(post)
-            launchEditPost()
         }
 
         override fun onRemove(post: Post) {
@@ -70,6 +70,11 @@ class FeedFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { posts ->
@@ -79,6 +84,7 @@ class FeedFragment : Fragment() {
             if (edited.id == 0L) {
                 return@observe
             }
+            launchEditPost()
         }
     }
 

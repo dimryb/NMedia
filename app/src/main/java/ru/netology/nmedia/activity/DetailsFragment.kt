@@ -1,15 +1,22 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.CounterFormatter
+import ru.netology.nmedia.presentation.PostViewModel
 
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
@@ -22,6 +29,10 @@ class DetailsFragment : Fragment() {
     private val binding: FragmentDetailsBinding
         get() = _binding ?: throw RuntimeException("FragmentDetailsBinding == null")
 
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,12 +43,8 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
+        setupClickListeners(args.post)
         setContent(args.post)
-    }
-
-    private fun setupClickListeners() {
-
     }
 
     private fun setContent(post: Post) {
@@ -60,5 +67,42 @@ class DetailsFragment : Fragment() {
                 media.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun setupClickListeners(post: Post) {
+        with(binding) {
+            likesButton.setOnClickListener { viewModel.like(post.id) }
+            shareButton.setOnClickListener { viewModel.share(post.id) }
+            media.setOnClickListener {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+            }
+            menuButton.setOnClickListener { setupPopupMenu(it, post) }
+        }
+    }
+
+    private fun setupPopupMenu(view: View, post: Post) {
+        PopupMenu(view.context, view).apply {
+            inflate(R.menu.options_post)
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.remove -> {
+                        viewModel.removeById(post.id)
+                        findNavController().navigateUp()
+                        true
+                    }
+                    R.id.edit -> {
+                        viewModel.edit(post)
+                        findNavController().navigateUp()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

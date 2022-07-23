@@ -36,6 +36,11 @@ class NewPostFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     private fun setupClickListeners() {
 
         binding.saveButton.setOnClickListener {
