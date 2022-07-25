@@ -26,11 +26,15 @@ class PostRepositorySQLiteImpl(
     }
 
     override fun share(postId: Long) {
-        TODO("Not yet implemented")
+        dao.shareById(postId)
+        posts = dao.getAll()
+        data.value = posts
     }
 
     override fun removeById(id: Long) {
-        TODO("Not yet implemented")
+        dao.removeById(id)
+        posts = dao.getAll()
+        data.value = posts
     }
 
     override fun save(post: Post) {
