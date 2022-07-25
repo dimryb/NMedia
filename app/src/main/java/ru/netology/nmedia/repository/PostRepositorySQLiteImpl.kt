@@ -20,7 +20,9 @@ class PostRepositorySQLiteImpl(
     override fun get(): LiveData<List<Post>> = data
 
     override fun like(postId: Long) {
-        TODO("Not yet implemented")
+        dao.likeById(postId)
+        posts = dao.getAll()
+        data.value = posts
     }
 
     override fun share(postId: Long) {
