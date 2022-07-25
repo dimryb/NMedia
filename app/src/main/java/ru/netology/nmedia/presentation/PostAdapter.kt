@@ -6,9 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
 
-typealias OnLikeListener = (post: Post) -> Unit
-typealias OnShareListener = (post: Post) -> Unit
-
 class PostAdapter(
     private val onInteractionListener: OnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
