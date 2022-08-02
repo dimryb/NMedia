@@ -16,7 +16,7 @@ import kotlin.random.Random
 class FCMService : FirebaseMessagingService() {
     private val action = "action"
     private val content = "content"
-    private val channelId = "remote";
+    private val channelId = "remote"
     private val gson = Gson()
 
     override fun onCreate() {
@@ -37,7 +37,6 @@ class FCMService : FirebaseMessagingService() {
         message.data[action]?.let {
             when (Action.valueOf(it)) {
                 Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
-                else -> Log.d("FCMService", "Unknown action type")
             }
         }
     }
@@ -53,7 +52,7 @@ class FCMService : FirebaseMessagingService() {
                 getString(
                     R.string.notification_user_liked,
                     content.userName,
-                    content.postAuthor
+                    content.postAuthor,
                 )
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
