@@ -1,5 +1,8 @@
 package ru.netology.nmedia.service
 
-enum class Action {
-    LIKE,
+class Action {
+    companion object {
+        const val LIKE = "LIKE"
+        const val NEW_POST = "NEW_POST"
+    }
 }
