@@ -37,7 +37,12 @@ class FCMService : FirebaseMessagingService() {
         message.data[action]?.let {
             when (it) {
                 Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
-                Action.NEW_POST -> handleNewPost(gson.fromJson(message.data[content], NewPost::class.java))
+                Action.NEW_POST -> handleNewPost(
+                    gson.fromJson(
+                        message.data[content],
+                        NewPost::class.java
+                    )
+                )
                 else -> Log.d("FCMService", "Неизвестный тип сообщения")
             }
         }
@@ -67,12 +72,23 @@ class FCMService : FirebaseMessagingService() {
     private fun handleNewPost(content: NewPost) {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
+            .setContentText(
+                getString(
+                    R.string.notification_new_post_short_content,
+                    content.content.slice(0..25)
+                )
+            )
             .setContentTitle(
                 getString(
                     R.string.notification_new_post,
-                    content.userName,
-                    content.content,
+                    content.userName
                 )
+            )
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(
+                        content.content,
+                    )
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
