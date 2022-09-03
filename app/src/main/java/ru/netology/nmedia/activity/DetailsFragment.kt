@@ -72,9 +72,9 @@ class DetailsFragment : Fragment() {
 
     private fun observeViewModel(post: Post) {
         viewModel.data.observe(viewLifecycleOwner){
-            viewModel.data.value?.find { it.id == post.id }?.let {
-                setContent(it)
-            }
+//            viewModel.data.value?.find { it.id == post.id }?.let {
+//                setContent(it)
+//            }
         }
     }
 
