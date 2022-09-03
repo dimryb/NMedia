@@ -13,4 +13,7 @@
     <string name="description_post_view">Посмотрело</string>
     <string name="empty_content_error">Нет содержимого</string>
     <string name="media_image">Иллюстрация медиа</string>
+    <string name="channel_remote_description">Удаленный канал</string>
+    <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
+    <string name="notification_new_post">%1$s опубликовал новый пост:</string>
 </resources>

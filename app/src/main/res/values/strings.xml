@@ -12,4 +12,9 @@
     <string name="description_post_share">Share</string>
     <string name="description_post_view">View</string>
     <string name="media_image">Media Image</string>
+    <string name="channel_remote_name" translatable="false">channel_remote</string>
+    <string name="channel_remote_description">Channel remote</string>
+    <string name="notification_user_liked">User %1$s liked post %2$s</string>
+    <string name="notification_new_post">User %1$s published new post</string>
+    <string name="notification_new_post_short_content" translatable="false">%1$s..</string>
 </resources>
