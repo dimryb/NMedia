@@ -48,7 +48,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun like(postId: Long) {
-        thread { repository.like(postId) }
+        thread {
+            val post = repository.like(postId)
+            _data.postValue(
+                _data.value?.posts?.let { posts ->
+                    _data.value?.copy(
+                        posts = posts.map { if (it.id == postId) post else it }
+                    )
+                }
+            )
+        }
     }
 
     fun share(postId: Long) {

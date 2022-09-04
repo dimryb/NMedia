@@ -1,5 +1,7 @@
 package ru.netology.nmedia.repository
 
+import android.util.Log
+import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,6 +20,7 @@ class PostRepositoryImpl : PostRepository {
         .build()
     private val gson = Gson()
     private val typeToken = object : TypeToken<List<Post>>() {}
+    private val typeTokenPost = object : TypeToken<Post>() {}
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:9999"
@@ -38,41 +41,40 @@ class PostRepositoryImpl : PostRepository {
         return posts
     }
 
-    override fun like(postId: Long) {
+    override fun like(postId: Long) : Post {
         val post = posts.find { post -> post.id == postId }
             ?: throw RuntimeException("post id: $postId not found")
         val likedByMe: Boolean = !post.likedByMe;
-
+        val likesUrl = "${BASE_URL}/api/posts/${postId}/likes"
         val request: Request = if (likedByMe) {
             Request.Builder()
                 .post("".toRequestBody())
-                .url("${BASE_URL}/api/posts/${postId}/likes")
+                .url(likesUrl)
                 .build()
         } else {
             Request.Builder()
                 .delete(null)
-                .url("${BASE_URL}/api/posts/${postId}/likes")
+                .url(likesUrl)
                 .build()
         }
 
-        client.newCall(request)
-            .execute()
-            .close()
+        val serverPost: Post =
+            client.newCall(request)
+                .execute()
+                .let { it.body?.string() ?: throw RuntimeException("body is null") }
+                .let {
+                    gson.fromJson(it, typeTokenPost.type)
+                }
 
-        // TODO: считать и обновить
         posts = posts.map {
-            if (it.id == postId) {
-                it.copy(
-                    likedByMe = likedByMe, likes = if (likedByMe) it.likes + 1 else it.likes - 1
-                )
-            } else {
-                it
-            }
+            if (it.id == postId) serverPost else it
         }
+        return serverPost
     }
 
     override fun share(postId: Long) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
+        Log.e("PostRepositoryImpl", "Share is not yet implemented")
     }
 
     override fun removeById(id: Long) {

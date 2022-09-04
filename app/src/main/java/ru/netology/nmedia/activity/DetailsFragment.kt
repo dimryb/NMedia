@@ -53,7 +53,7 @@ class DetailsFragment : Fragment() {
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            likesButton.text = post.likesCount.toString()
+            likesButton.text = post.likes.toString()
             likesButton.isChecked = post.likedByMe
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
