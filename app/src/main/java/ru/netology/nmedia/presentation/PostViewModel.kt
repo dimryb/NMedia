@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
 import kotlin.concurrent.thread
 
@@ -26,6 +27,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val data: LiveData<FeedModel>
         get() = _data
     val edited = MutableLiveData(empty)
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
 
     init {
         loadPosts()
@@ -43,13 +47,38 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun like(postId: Long) = repository.like(postId)
-    fun share(postId: Long) = repository.share(postId)
-    fun removeById(postId: Long) = repository.removeById(postId)
+    fun like(postId: Long) {
+        thread { repository.like(postId) }
+    }
+
+    fun share(postId: Long) {
+        thread { repository.share(postId) }
+    }
+
+    fun removeById(postId: Long) {
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            val posts = _data.value?.posts.orEmpty()
+                .filter { it.id != postId }
+            _data.postValue(
+                _data.value?.copy(
+                    posts = posts, empty = posts.isEmpty()
+                )
+            )
+            try {
+                repository.removeById(postId)
+            } catch (e: IOException) {
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+        }
+    }
 
     fun save() {
-        edited.value?.let {
-            repository.save(it)
+        edited.value?.let { post ->
+            thread {
+                repository.save(post)
+                _postCreated.postValue(Unit)
+            }
         }
         edited.value = empty
     }
