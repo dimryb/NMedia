@@ -67,7 +67,7 @@ class FeedFragment : Fragment() {
             false
         )
         observeViewModel()
-        setupClickListeners()
+        setupListeners()
         return binding.root
     }
 
@@ -92,12 +92,16 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun setupClickListeners() {
+    private fun setupListeners() {
         binding.createButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
+        }
+        binding.swiperefresh.setOnRefreshListener {
+            viewModel.loadPosts()
+            binding.swiperefresh.isRefreshing = false
         }
     }
 
