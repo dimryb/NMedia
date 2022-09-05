@@ -24,6 +24,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.usesCleartextTraffic = false
+        }
+        debug {
+            manifestPlaceholders.usesCleartextTraffic = true
         }
     }
     compileOptions {
@@ -40,7 +44,9 @@ android {
 }
 
 dependencies {
+    def okhttp_version = "4.9.1"
 
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation "androidx.fragment:fragment-ktx:1.5.1"

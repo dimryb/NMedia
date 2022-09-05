@@ -53,7 +53,7 @@ class DetailsFragment : Fragment() {
             authorTextView.text = post.author
             publishedTextView.text = post.published
             postTextView.text = post.content
-            likesButton.text = post.likesCount.toString()
+            likesButton.text = post.likes.toString()
             likesButton.isChecked = post.likedByMe
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
@@ -72,7 +72,7 @@ class DetailsFragment : Fragment() {
 
     private fun observeViewModel(post: Post) {
         viewModel.data.observe(viewLifecycleOwner){
-            viewModel.data.value?.find { it.id == post.id }?.let {
+            viewModel.data.value?.posts?.find { it.id == post.id }?.let {
                 setContent(it)
             }
         }
