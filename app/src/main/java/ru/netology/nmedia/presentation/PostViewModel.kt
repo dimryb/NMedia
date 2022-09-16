@@ -8,8 +8,6 @@ import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.IOException
-import kotlin.concurrent.thread
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -33,11 +31,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _postCreated
 
     init {
-        loadPosts()
+        loadPosts(swipeRefresh = false)
     }
 
-    fun loadPosts() {
-        _data.postValue(FeedModel(loading = true))
+    fun loadPosts(swipeRefresh: Boolean) {
+        val old = _data.value?.posts.orEmpty()
+        _data.postValue(FeedModel(posts = old, loading = true, swipeRefresh = swipeRefresh))
 
         repository.getAllAsync(object : PostRepository.Callback<List<Post>> {
             override fun onSuccess(result: List<Post>) {
