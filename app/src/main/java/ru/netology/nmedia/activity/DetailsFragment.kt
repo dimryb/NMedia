@@ -81,7 +81,7 @@ class DetailsFragment : Fragment() {
     private fun setupClickListeners(post: Post) {
         with(binding) {
             likesButton.setOnClickListener {
-                viewModel.like(post.id)
+                viewModel.like(post)
             }
             shareButton.setOnClickListener {
                 viewModel.share(post.id)

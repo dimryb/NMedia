@@ -39,7 +39,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun loadPosts() {
         _data.postValue(FeedModel(loading = true))
 
-        repository.getAllAsync(object : PostRepository.GetAllCallback {
+        repository.getAllAsync(object : PostRepository.Callback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
@@ -50,17 +50,23 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun like(postId: Long) {
-        thread {
-            val post = repository.like(postId)
-            _data.postValue(
-                _data.value?.posts?.let { posts ->
-                    _data.value?.copy(
-                        posts = posts.map { if (it.id == postId) post else it }
-                    )
+    fun like(post: Post) {
+        repository.likeByIdAsync(
+            post.id,
+            !post.likedByMe,
+            object : PostRepository.Callback<Post> {
+                override fun onSuccess(result: Post) {
+                    val old = _data.value?.posts.orEmpty()
+                    val new = old.map {
+                        if (result.id == it.id) result else it
+                    }
+                    _data.postValue(FeedModel(posts = new))
                 }
-            )
-        }
+
+                override fun onError(e: Exception) {
+                    _data.postValue(FeedModel(error = true))
+                }
+            })
     }
 
     fun share(postId: Long) {
@@ -88,7 +94,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun save() {
         edited.value?.let { post ->
             thread {
-                repository.save(post)
+                val newPost = repository.save(post)
+                val old = _data.value?.posts.orEmpty()
+                val posts = listOf(newPost) + old
+                _data.postValue(FeedModel(posts = posts))
                 _postCreated.postValue(Unit)
             }
         }

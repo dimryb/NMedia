@@ -12,36 +12,18 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class PostRepositoryImpl : PostRepository {
-
-    private var posts = emptyList<Post>()
-
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
     private val gson = Gson()
     private val typeToken = object : TypeToken<List<Post>>() {}
-    private val typeTokenPost = object : TypeToken<Post>() {}
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:9999"
         private val jsonType = "application/json".toMediaType()
     }
 
-    override fun get(): List<Post> {
-        val request: Request = Request.Builder()
-            .url("${BASE_URL}/api/slow/posts")
-            .build()
-
-        posts = client.newCall(request)
-            .execute()
-            .let { it.body?.string() ?: throw RuntimeException("body is null") }
-            .let {
-                gson.fromJson(it, typeToken.type)
-            }
-        return posts
-    }
-
-    override fun getAllAsync(callback: PostRepository.GetAllCallback) {
+    override fun getAllAsync(callback: PostRepository.Callback<List<Post>>) {
         val request: Request = Request.Builder()
             .url("${BASE_URL}/api/slow/posts")
             .build()
@@ -51,8 +33,7 @@ class PostRepositoryImpl : PostRepository {
                 override fun onResponse(call: Call, response: Response) {
                     val body = response.body?.string() ?: throw RuntimeException("body is null")
                     try {
-                        posts = gson.fromJson(body, typeToken.type);
-                        callback.onSuccess(posts)
+                        callback.onSuccess(gson.fromJson(body, typeToken.type))
                     } catch (e: Exception) {
                         callback.onError(e)
                     }
@@ -64,10 +45,7 @@ class PostRepositoryImpl : PostRepository {
             })
     }
 
-    override fun like(postId: Long) : Post {
-        val post = posts.find { post -> post.id == postId }
-            ?: throw RuntimeException("post id: $postId not found")
-        val likedByMe: Boolean = !post.likedByMe;
+    override fun likeByIdAsync(postId: Long, likedByMe: Boolean, callback: PostRepository.Callback<Post>){
         val likesUrl = "${BASE_URL}/api/posts/${postId}/likes"
         val request: Request = if (likedByMe) {
             Request.Builder()
@@ -81,18 +59,21 @@ class PostRepositoryImpl : PostRepository {
                 .build()
         }
 
-        val serverPost: Post =
-            client.newCall(request)
-                .execute()
-                .let { it.body?.string() ?: throw RuntimeException("body is null") }
-                .let {
-                    gson.fromJson(it, typeTokenPost.type)
+        client.newCall(request)
+            .enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    val body = response.body?.string() ?: throw RuntimeException("body is null")
+                    try {
+                        callback.onSuccess(gson.fromJson(body, Post::class.java))
+                    } catch (e: Exception) {
+                        callback.onError(e)
+                    }
                 }
 
-        posts = posts.map {
-            if (it.id == postId) serverPost else it
-        }
-        return serverPost
+                override fun onFailure(call: Call, e: IOException) {
+                    callback.onError(e)
+                }
+            })
     }
 
     override fun share(postId: Long) {
@@ -111,14 +92,17 @@ class PostRepositoryImpl : PostRepository {
             .close()
     }
 
-    override fun save(post: Post) {
+    override fun save(post: Post): Post {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts")
             .build()
 
-        client.newCall(request)
+        return client.newCall(request)
             .execute()
-            .close()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, Post::class.java)
+            }
     }
 }
