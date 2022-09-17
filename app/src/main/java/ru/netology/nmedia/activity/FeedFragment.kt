@@ -30,7 +30,7 @@ class FeedFragment : Fragment() {
 
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
-            viewModel.like(post.id)
+            viewModel.like(post)
         }
 
         override fun onShare(post: Post) {
@@ -80,7 +80,7 @@ class FeedFragment : Fragment() {
         binding.postsList.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-            binding.progress.isVisible = state.loading
+            binding.progress.isVisible = if (state.swipeRefresh) false else state.loading
             binding.errorGroup.isVisible = state.error
             binding.emptyText.isVisible = state.empty
         }
@@ -97,10 +97,10 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
         binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
+            viewModel.loadPosts(swipeRefresh = false)
         }
         binding.swiperefresh.setOnRefreshListener {
-            viewModel.loadPosts()
+            viewModel.loadPosts(swipeRefresh = true)
             binding.swiperefresh.isRefreshing = false
         }
     }
