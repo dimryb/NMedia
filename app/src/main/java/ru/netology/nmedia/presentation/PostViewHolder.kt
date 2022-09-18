@@ -3,6 +3,7 @@ package ru.netology.nmedia.presentation
 import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -51,10 +52,16 @@ class PostViewHolder(
     private fun setAuthorAvatar (cardPostBinding: CardPostBinding, authorAvatar: String){
         val baseUrl = "http://10.0.2.2:9999"
         val url = "${baseUrl}/avatars/${authorAvatar}"
-        Picasso.get()
-            .load(url)
-            .error(R.drawable.ic_error_100dp)
-            .into(cardPostBinding.avatarImageView);
+//        Picasso.get()
+//            .load(url)
+//            .error(R.drawable.ic_error_100dp)
+//            .into(cardPostBinding.avatarImageView);
+        Glide.with(cardPostBinding.avatarImageView)
+        .load(url)
+        .placeholder(R.drawable.ic_loading_100dp)
+        .error(R.drawable.ic_error_100dp)
+        .timeout(10_000)
+        .into(cardPostBinding.avatarImageView)
     }
 
 

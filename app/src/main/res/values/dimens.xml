@@ -8,4 +8,6 @@
     <dimen name="icon_button_min_size">24dp</dimen>
     <dimen name="icon_button_min_height">@dimen/icon_button_min_size</dimen>
     <dimen name="icon_button_min_width">88dp</dimen>
+    <dimen name="avatar_width">48dp</dimen>
+    <dimen name="avatar_height">48dp</dimen>
 </resources>
