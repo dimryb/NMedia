@@ -3,6 +3,7 @@ package ru.netology.nmedia.presentation
 import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
@@ -42,7 +43,18 @@ class PostViewHolder(
                 mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
                 media.visibility = View.VISIBLE
             }
+
+            setAuthorAvatar (this, post.authorAvatar)
         }
+    }
+
+    private fun setAuthorAvatar (cardPostBinding: CardPostBinding, authorAvatar: String){
+        val baseUrl = "http://10.0.2.2:9999"
+        val url = "${baseUrl}/avatars/${authorAvatar}"
+        Picasso.get()
+            .load(url)
+            .error(R.drawable.ic_error_100dp)
+            .into(cardPostBinding.avatarImageView);
     }
 
 
