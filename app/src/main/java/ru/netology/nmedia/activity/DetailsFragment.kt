@@ -1,17 +1,17 @@
 package ru.netology.nmedia.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
@@ -20,7 +20,7 @@ import ru.netology.nmedia.presentation.PostViewModel
 
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
-
+    private val baseUrl: String = "http://10.0.2.2:9999"
     private val formatter: CounterFormatter by lazy {
         CounterFormatter()
     }
@@ -58,16 +58,49 @@ class DetailsFragment : Fragment() {
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
-            if (post.video.isNullOrBlank()) {
+            //if (post.video.isNullOrBlank()) {
+            if(post.attachment == null){
                 mediaImageView.setImageResource(0)
                 mediaTextView.text = null
                 media.visibility = View.GONE
             } else {
-                mediaImageView.setImageResource(R.mipmap.media)
-                mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                media.visibility = View.VISIBLE
+                when(post.attachment.type){
+                    "IMAGE" ->{
+                        mediaTextView.text = null
+                        mediaTextView.visibility = View.GONE
+                        media.visibility = View.VISIBLE
+                        setMediaImage(mediaImageView, post.attachment.url)
+                    }
+                    else -> {
+                        mediaImageView.setImageResource(R.mipmap.media)
+                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
+                        media.visibility = View.VISIBLE
+                    }
+                }
             }
+
+            setAuthorAvatar(this, post.authorAvatar)
         }
+    }
+
+    private fun setAuthorAvatar(binding: FragmentDetailsBinding, authorAvatar: String) {
+        val url = "${baseUrl}/avatars/${authorAvatar}"
+        Glide.with(binding.avatarImageView)
+            .load(url)
+            .transform(RoundedCorners(70))
+            .placeholder(R.drawable.ic_loading_140dp)
+            .error(R.drawable.ic_error_140dp)
+            .timeout(10_000)
+            .into(binding.avatarImageView)
+    }
+
+    private fun setMediaImage(image: ImageView, imageUrl: String){
+        val url = "${baseUrl}/images/${imageUrl}"
+        Glide.with(image)
+            .load(url)
+            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
+            .timeout(10_000)
+            .into(image)
     }
 
     private fun observeViewModel(post: Post) {
@@ -87,7 +120,7 @@ class DetailsFragment : Fragment() {
                 viewModel.share(post.id)
             }
             media.setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+                //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
             }
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
