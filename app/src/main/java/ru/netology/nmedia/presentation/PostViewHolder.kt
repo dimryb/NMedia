@@ -12,8 +12,7 @@ import ru.netology.nmedia.domain.Post
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onInteractionListener: OnInteractionListener,
-    private val baseUrl: String = "http://10.0.2.2:9999"
+    private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val formatter: CounterFormatter by lazy {
@@ -37,13 +36,13 @@ class PostViewHolder(
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
-            if(post.attachment == null){
+            if (post.attachment == null) {
                 mediaImageView.setImageResource(0)
                 mediaTextView.text = null
                 media.visibility = View.GONE
             } else {
-                when(post.attachment.type){
-                    "IMAGE" ->{
+                when (post.attachment.type) {
+                    "IMAGE" -> {
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
@@ -57,25 +56,23 @@ class PostViewHolder(
                 }
             }
 
-            setAuthorAvatar(this, post.authorAvatar)
+            setAuthorAvatar(avatarImageView, post.authorAvatar)
         }
     }
 
-    private fun setAuthorAvatar(cardPostBinding: CardPostBinding, authorAvatar: String) {
-        val url = "${baseUrl}/avatars/${authorAvatar}"
-        Glide.with(cardPostBinding.avatarImageView)
-            .load(url)
+    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
+        Glide.with(image)
+            .load(avatarUrl)
             .transform(RoundedCorners(70))
             .placeholder(R.drawable.ic_loading_140dp)
             .error(R.drawable.ic_error_140dp)
             .timeout(10_000)
-            .into(cardPostBinding.avatarImageView)
+            .into(image)
     }
 
-    private fun setMediaImage(image: ImageView, imageUrl: String){
-        val url = "${baseUrl}/images/${imageUrl}"
+    private fun setMediaImage(image: ImageView, imageUrl: String) {
         Glide.with(image)
-            .load(url)
+            .load(imageUrl)
             .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
             .timeout(10_000)
             .into(image)
