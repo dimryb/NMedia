@@ -1,6 +1,7 @@
 package ru.netology.nmedia.presentation
 
 import android.view.View
+import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -35,32 +36,47 @@ class PostViewHolder(
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
-            if (post.video.isNullOrBlank()) {
+            if (post.attachment == null) {
                 mediaImageView.setImageResource(0)
                 mediaTextView.text = null
                 media.visibility = View.GONE
             } else {
-                mediaImageView.setImageResource(R.mipmap.media)
-                mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                media.visibility = View.VISIBLE
+                when (post.attachment.type) {
+                    "IMAGE" -> {
+                        mediaTextView.text = null
+                        mediaTextView.visibility = View.GONE
+                        media.visibility = View.VISIBLE
+                        setMediaImage(mediaImageView, post.attachment.url)
+                    }
+                    else -> {
+                        mediaImageView.setImageResource(R.mipmap.media)
+                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
+                        media.visibility = View.VISIBLE
+                    }
+                }
             }
 
-            setAuthorAvatar(this, post.authorAvatar)
+            setAuthorAvatar(avatarImageView, post.authorAvatar)
         }
     }
 
-    private fun setAuthorAvatar(cardPostBinding: CardPostBinding, authorAvatar: String) {
-        val baseUrl = "http://10.0.2.2:9999"
-        val url = "${baseUrl}/avatars/${authorAvatar}"
-        Glide.with(cardPostBinding.avatarImageView)
-            .load(url)
+    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
+        Glide.with(image)
+            .load(avatarUrl)
             .transform(RoundedCorners(70))
-            .placeholder(R.drawable.ic_loading_100dp)
-            .error(R.drawable.ic_error_100dp)
+            .placeholder(R.drawable.ic_loading_140dp)
+            .error(R.drawable.ic_error_140dp)
             .timeout(10_000)
-            .into(cardPostBinding.avatarImageView)
+            .into(image)
     }
 
+    private fun setMediaImage(image: ImageView, imageUrl: String) {
+        Glide.with(image)
+            .load(imageUrl)
+            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
+            .timeout(10_000)
+            .into(image)
+    }
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {
         with(cardPostBinding) {

@@ -1,17 +1,17 @@
 package ru.netology.nmedia.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
@@ -58,20 +58,51 @@ class DetailsFragment : Fragment() {
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
-            if (post.video.isNullOrBlank()) {
+            //if (post.video.isNullOrBlank()) {
+            if (post.attachment == null) {
                 mediaImageView.setImageResource(0)
                 mediaTextView.text = null
                 media.visibility = View.GONE
             } else {
-                mediaImageView.setImageResource(R.mipmap.media)
-                mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                media.visibility = View.VISIBLE
+                when (post.attachment.type) {
+                    "IMAGE" -> {
+                        mediaTextView.text = null
+                        mediaTextView.visibility = View.GONE
+                        media.visibility = View.VISIBLE
+                        setMediaImage(mediaImageView, post.attachment.url)
+                    }
+                    else -> {
+                        mediaImageView.setImageResource(R.mipmap.media)
+                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
+                        media.visibility = View.VISIBLE
+                    }
+                }
             }
+
+            setAuthorAvatar(avatarImageView, post.authorAvatar)
         }
     }
 
+    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
+        Glide.with(image)
+            .load(avatarUrl)
+            .transform(RoundedCorners(70))
+            .placeholder(R.drawable.ic_loading_140dp)
+            .error(R.drawable.ic_error_140dp)
+            .timeout(10_000)
+            .into(image)
+    }
+
+    private fun setMediaImage(image: ImageView, imageUrl: String) {
+        Glide.with(image)
+            .load(imageUrl)
+            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
+            .timeout(10_000)
+            .into(image)
+    }
+
     private fun observeViewModel(post: Post) {
-        viewModel.data.observe(viewLifecycleOwner){
+        viewModel.data.observe(viewLifecycleOwner) {
             viewModel.data.value?.posts?.find { it.id == post.id }?.let {
                 setContent(it)
             }
@@ -87,7 +118,7 @@ class DetailsFragment : Fragment() {
                 viewModel.share(post.id)
             }
             media.setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+                //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
             }
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }

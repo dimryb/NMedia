@@ -46,7 +46,7 @@ class FeedFragment : Fragment() {
         }
 
         override fun onMedia(post: Post) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+            //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
         }
 
         override fun onDetails(post: Post) {

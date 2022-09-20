@@ -15,4 +15,6 @@ data class Post(
     val sharedCount: Long = 0,
     val viewCount: Long = 0,
     val video: String? = null,
+    val attachment: Attachment? = null,
 ) : Parcelable
+
