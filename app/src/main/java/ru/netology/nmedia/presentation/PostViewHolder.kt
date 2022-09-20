@@ -3,6 +3,8 @@ package ru.netology.nmedia.presentation
 import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
@@ -42,7 +44,21 @@ class PostViewHolder(
                 mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
                 media.visibility = View.VISIBLE
             }
+
+            setAuthorAvatar(this, post.authorAvatar)
         }
+    }
+
+    private fun setAuthorAvatar(cardPostBinding: CardPostBinding, authorAvatar: String) {
+        val baseUrl = "http://10.0.2.2:9999"
+        val url = "${baseUrl}/avatars/${authorAvatar}"
+        Glide.with(cardPostBinding.avatarImageView)
+            .load(url)
+            .transform(RoundedCorners(70))
+            .placeholder(R.drawable.ic_loading_100dp)
+            .error(R.drawable.ic_error_100dp)
+            .timeout(10_000)
+            .into(cardPostBinding.avatarImageView)
     }
 
 
