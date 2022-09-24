@@ -2,7 +2,6 @@ package ru.netology.nmedia.repository
 
 import android.util.Log
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -16,8 +15,6 @@ class PostRepositoryImpl : PostRepository {
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
     private val gson = Gson()
-    private val typeToken = object : TypeToken<List<Post>>() {}
-
 
     override fun getAllAsync(callback: PostRepository.Callback<List<Post>>) {
         PostsApi.retrofitService.getAll().enqueue(object : retrofit2.Callback<List<Post>> {
@@ -48,34 +45,36 @@ class PostRepositoryImpl : PostRepository {
         likedByMe: Boolean,
         callback: PostRepository.Callback<Post>
     ) {
-        val likesUrl = "${BASE_URL}/api/posts/${postId}/likes"
-        val request: Request = if (likedByMe) {
-            Request.Builder()
-                .post("".toRequestBody())
-                .url(likesUrl)
-                .build()
-        } else {
-            Request.Builder()
-                .delete(null)
-                .url(likesUrl)
-                .build()
-        }
+//        fun likeFun(postId: Long) = if (likedByMe)
+//            PostsApi.retrofitService.likeById(postId)
+//        else
+//            PostsApi.retrofitService.dislikeById(postId)
 
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    val body = response.body?.string() ?: throw RuntimeException("body is null")
-                    try {
-                        callback.onSuccess(urlAdapter(gson.fromJson(body, Post::class.java)))
-                    } catch (e: Exception) {
-                        callback.onError(e)
-                    }
+        val likeFun =
+            with(PostsApi.retrofitService) { if (likedByMe) ::likeById else ::dislikeById }
+
+        likeFun(postId).enqueue(object : retrofit2.Callback<Post>{
+            override fun onResponse(
+                call: retrofit2.Call<Post>,
+                response: retrofit2.Response<Post>
+            ) {
+                if (!response.isSuccessful) {
+                    callback.onError(java.lang.RuntimeException(response.message()))
+                    return
                 }
 
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-            })
+                callback.onSuccess(
+                    urlAdapter(
+                        response.body() ?: throw java.lang.RuntimeException("body is null")
+                    )
+                )
+            }
+
+            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     override fun shareByIdAsync(postId: Long, callback: PostRepository.Callback<Post>) {
