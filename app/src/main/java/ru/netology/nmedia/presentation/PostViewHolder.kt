@@ -62,13 +62,7 @@ class PostViewHolder(
     }
 
     private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
-        Glide.with(image)
-            .load(avatarUrl.fullAvatarsUrl())
-            .transform(RoundedCorners(70))
-            .placeholder(R.drawable.ic_loading_140dp)
-            .error(R.drawable.ic_error_140dp)
-            .timeout(10_000)
-            .into(image)
+        image.loadCircleCrop(avatarUrl.fullAvatarsUrl())
     }
 
     private fun setMediaImage(image: ImageView, imageUrl: String) {
