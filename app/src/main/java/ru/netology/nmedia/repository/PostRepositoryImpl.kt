@@ -45,11 +45,6 @@ class PostRepositoryImpl : PostRepository {
         likedByMe: Boolean,
         callback: PostRepository.Callback<Post>
     ) {
-//        fun likeFun(postId: Long) = if (likedByMe)
-//            PostsApi.retrofitService.likeById(postId)
-//        else
-//            PostsApi.retrofitService.dislikeById(postId)
-
         val likeFun =
             with(PostsApi.retrofitService) { if (likedByMe) ::likeById else ::dislikeById }
 
@@ -105,26 +100,27 @@ class PostRepositoryImpl : PostRepository {
     }
 
     override fun saveByIdAsync(post: Post, callback: PostRepository.Callback<Post>) {
-        val request: Request = Request.Builder()
-            .post(gson.toJson(post).toRequestBody(jsonType))
-            .url("${BASE_URL}/api/posts")
-            .build()
-
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    val body = response.body?.string() ?: throw RuntimeException("body is null")
-                    try {
-                        callback.onSuccess(urlAdapter(gson.fromJson(body, Post::class.java)))
-                    } catch (e: Exception) {
-                        callback.onError(e)
-                    }
+        PostsApi.retrofitService.save(post).enqueue(object : retrofit2.Callback<Post> {
+            override fun onResponse(
+                call: retrofit2.Call<Post>,
+                response: retrofit2.Response<Post>
+            ) {
+                if (!response.isSuccessful) {
+                    callback.onError(java.lang.RuntimeException(response.message()))
+                    return
                 }
 
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-            })
+                callback.onSuccess(
+                    urlAdapter(
+                        response.body() ?: throw java.lang.RuntimeException("body is null")
+                    )
+                )
+            }
+
+            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     companion object {
