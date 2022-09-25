@@ -6,6 +6,7 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
@@ -62,7 +63,7 @@ class PostViewHolder(
 
     private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
         Glide.with(image)
-            .load(avatarUrl)
+            .load(avatarUrl.fullAvatarsUrl())
             .transform(RoundedCorners(70))
             .placeholder(R.drawable.ic_loading_140dp)
             .error(R.drawable.ic_error_140dp)
@@ -71,9 +72,10 @@ class PostViewHolder(
     }
 
     private fun setMediaImage(image: ImageView, imageUrl: String) {
-        val imageWidth = 982 // TODO: разобраться как правильно определить необходимые размеры изображения
+        val imageWidth =
+            982 // TODO: разобраться как правильно определить необходимые размеры изображения
         Glide.with(image)
-            .load(imageUrl)
+            .load(imageUrl.fullImagesUrl())
             .override(imageWidth)
             .timeout(10_000)
             .into(image)
@@ -107,6 +109,11 @@ class PostViewHolder(
                 }
             }
         }.show()
+    }
+
+    companion object {
+        private fun String.fullAvatarsUrl() = "${BuildConfig.BASE_URL}/avatars/$this"
+        private fun String.fullImagesUrl() = "${BuildConfig.BASE_URL}/images/$this"
     }
 }
 

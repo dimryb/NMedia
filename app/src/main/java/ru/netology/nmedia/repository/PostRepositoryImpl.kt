@@ -1,21 +1,10 @@
 package ru.netology.nmedia.repository
 
 import android.util.Log
-import com.google.gson.Gson
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.domain.Post
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 class PostRepositoryImpl : PostRepository {
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
-    private val gson = Gson()
-
     override fun getAllAsync(callback: PostRepository.Callback<List<Post>>) {
         PostsApi.retrofitService.getAll().enqueue(object : retrofit2.Callback<List<Post>> {
             override fun onResponse(
@@ -28,9 +17,7 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 callback.onSuccess(
-                    urlAdapter(
-                        response.body() ?: throw java.lang.RuntimeException("body is null")
-                    )
+                    response.body() ?: throw java.lang.RuntimeException("body is null")
                 )
             }
 
@@ -59,9 +46,7 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 callback.onSuccess(
-                    urlAdapter(
-                        response.body() ?: throw java.lang.RuntimeException("body is null")
-                    )
+                    response.body() ?: throw java.lang.RuntimeException("body is null")
                 )
             }
 
@@ -111,9 +96,7 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 callback.onSuccess(
-                    urlAdapter(
-                        response.body() ?: throw java.lang.RuntimeException("body is null")
-                    )
+                    response.body() ?: throw java.lang.RuntimeException("body is null")
                 )
             }
 
@@ -121,23 +104,5 @@ class PostRepositoryImpl : PostRepository {
                 TODO("Not yet implemented")
             }
         })
-    }
-
-    companion object {
-        private const val BASE_URL = "http://10.0.2.2:9999"
-        private val jsonType = "application/json".toMediaType()
-
-        private fun urlAdapter(post: Post): Post {
-            return post.copy(
-                authorAvatar = "${BASE_URL}/avatars/${post.authorAvatar}",
-                attachment = if (post.attachment != null) {
-                    post.attachment.copy(url = "${BASE_URL}/images/${post.attachment.url}")
-                } else null
-            )
-        }
-
-        private fun urlAdapter(posts: List<Post>): List<Post> {
-            return posts.map { urlAdapter(it) }
-        }
     }
 }
