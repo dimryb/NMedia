@@ -53,7 +53,7 @@ class PostRepositoryImpl : PostRepository {
         val likeFun =
             with(PostsApi.retrofitService) { if (likedByMe) ::likeById else ::dislikeById }
 
-        likeFun(postId).enqueue(object : retrofit2.Callback<Post>{
+        likeFun(postId).enqueue(object : retrofit2.Callback<Post> {
             override fun onResponse(
                 call: retrofit2.Call<Post>,
                 response: retrofit2.Response<Post>
@@ -83,26 +83,25 @@ class PostRepositoryImpl : PostRepository {
     }
 
     override fun removeByIdAsync(postId: Long, callback: PostRepository.Callback<Unit>) {
-        val request: Request = Request.Builder()
-            .delete()
-            .url("${BASE_URL}/api/slow/posts/$postId")
-            .build()
-
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.string() ?: throw RuntimeException("body is null")
-                    try {
-                        callback.onSuccess(Unit)
-                    } catch (e: Exception) {
-                        callback.onError(e)
-                    }
+        PostsApi.retrofitService.removeById(postId).enqueue(object : retrofit2.Callback<Unit> {
+            override fun onResponse(
+                call: retrofit2.Call<Unit>,
+                response: retrofit2.Response<Unit>
+            ) {
+                if (!response.isSuccessful) {
+                    callback.onError(java.lang.RuntimeException(response.message()))
+                    return
                 }
 
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-            })
+                callback.onSuccess(
+                    response.body() ?: throw java.lang.RuntimeException("body is null")
+                )
+            }
+
+            override fun onFailure(call: retrofit2.Call<Unit>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     override fun saveByIdAsync(post: Post, callback: PostRepository.Callback<Post>) {

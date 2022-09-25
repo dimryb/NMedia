@@ -71,9 +71,10 @@ class PostViewHolder(
     }
 
     private fun setMediaImage(image: ImageView, imageUrl: String) {
+        val imageWidth = 982 // TODO: разобраться как правильно определить необходимые размеры изображения
         Glide.with(image)
             .load(imageUrl)
-            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
+            .override(imageWidth)
             .timeout(10_000)
             .into(image)
     }
