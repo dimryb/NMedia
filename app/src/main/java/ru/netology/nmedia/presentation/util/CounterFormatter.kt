@@ -1,4 +1,4 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.util
 
 class CounterFormatter {
 
@@ -20,13 +20,13 @@ class CounterFormatter {
                 COUNTER_DIVIDER_K,
                 SUFFIX_K
             )
-            counter in 10_000 until 1_000_000 -> "${counter / COUNTER_DIVIDER_K}${SUFFIX_K}"
+            counter in 10_000 until 1_000_000 -> "${counter / COUNTER_DIVIDER_K}$SUFFIX_K"
             counter in 1_000_000 until 10_000_000 -> counterCompressionFraction(
                 counter,
                 COUNTER_DIVIDER_M,
                 SUFFIX_M
             )
-            else -> "${counter / COUNTER_DIVIDER_M}${SUFFIX_M}"
+            else -> "${counter / COUNTER_DIVIDER_M}$SUFFIX_M"
         }
     }
 

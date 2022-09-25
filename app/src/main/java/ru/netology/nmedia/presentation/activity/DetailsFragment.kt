@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.presentation.activity
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,8 +15,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.presentation.CounterFormatter
-import ru.netology.nmedia.presentation.PostViewModel
+import ru.netology.nmedia.presentation.util.CounterFormatter
+import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()

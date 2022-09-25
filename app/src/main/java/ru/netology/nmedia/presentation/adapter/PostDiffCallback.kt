@@ -1,4 +1,4 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.netology.nmedia.domain.Post

@@ -3,6 +3,7 @@ package ru.netology.nmedia.presentation
 import org.junit.Assert.*
 
 import org.junit.Test
+import ru.netology.nmedia.presentation.util.CounterFormatter
 
 class CounterFormatterTest {
 

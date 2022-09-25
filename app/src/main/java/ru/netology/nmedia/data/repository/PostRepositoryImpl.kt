@@ -1,7 +1,7 @@
-package ru.netology.nmedia.repository
+package ru.netology.nmedia.data.repository
 
 import android.util.Log
-import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.domain.Post
 
 class PostRepositoryImpl : PostRepository {

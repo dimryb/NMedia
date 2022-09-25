@@ -1,4 +1,4 @@
-package ru.netology.nmedia.repository
+package ru.netology.nmedia.data.repository
 
 import ru.netology.nmedia.domain.Post
 

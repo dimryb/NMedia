@@ -1,4 +1,4 @@
-package ru.netology.nmedia.data
+package ru.netology.nmedia.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

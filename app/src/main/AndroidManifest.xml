@@ -13,7 +13,7 @@
         android:theme="@style/Theme.NMedia"
         android:usesCleartextTraffic="${usesCleartextTraffic}">
 
-        <activity android:name=".activity.AppActivity"
+        <activity android:name="ru.netology.nmedia.presentation.activity.AppActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <nav-graph android:value="@navigation/nav_main"/>

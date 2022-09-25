@@ -1,15 +1,16 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.viewholder
 
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.presentation.util.CounterFormatter
+import ru.netology.nmedia.presentation.view.loadCircleCrop
 
 class PostViewHolder(
     private val binding: CardPostBinding,

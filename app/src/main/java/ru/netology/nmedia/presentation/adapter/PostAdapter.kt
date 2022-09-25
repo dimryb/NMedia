@@ -1,10 +1,12 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
+import ru.netology.nmedia.presentation.viewholder.PostViewHolder
 
 class PostAdapter(
     private val onInteractionListener: OnInteractionListener

@@ -1,12 +1,13 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.presentation.model.FeedModel
+import ru.netology.nmedia.data.repository.PostRepository
+import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
