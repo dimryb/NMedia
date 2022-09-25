@@ -10,7 +10,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.util.CounterFormatter
-import ru.netology.nmedia.presentation.view.loadCircleCrop
+import ru.netology.nmedia.presentation.view.*
 
 class PostViewHolder(
     private val binding: CardPostBinding,
@@ -48,7 +48,8 @@ class PostViewHolder(
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
-                        setMediaImage(mediaImageView, post.attachment.url)
+
+                        mediaImageView.loadImageMedia(post.attachment.url)
                     }
                     else -> {
                         mediaImageView.setImageResource(R.mipmap.media)
@@ -58,22 +59,8 @@ class PostViewHolder(
                 }
             }
 
-            setAuthorAvatar(avatarImageView, post.authorAvatar)
+            avatarImageView.loadAuthorAvatar(post.authorAvatar)
         }
-    }
-
-    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
-        image.loadCircleCrop(avatarUrl.fullAvatarsUrl())
-    }
-
-    private fun setMediaImage(image: ImageView, imageUrl: String) {
-        val imageWidth =
-            982 // TODO: разобраться как правильно определить необходимые размеры изображения
-        Glide.with(image)
-            .load(imageUrl.fullImagesUrl())
-            .override(imageWidth)
-            .timeout(10_000)
-            .into(image)
     }
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {
@@ -104,11 +91,6 @@ class PostViewHolder(
                 }
             }
         }.show()
-    }
-
-    companion object {
-        private fun String.fullAvatarsUrl() = "${BuildConfig.BASE_URL}/avatars/$this"
-        private fun String.fullImagesUrl() = "${BuildConfig.BASE_URL}/images/$this"
     }
 }
 
