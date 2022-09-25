@@ -22,7 +22,7 @@ class PostRepositoryImpl : PostRepository {
             }
 
             override fun onFailure(call: retrofit2.Call<List<Post>>, t: Throwable) {
-                TODO("Not yet implemented")
+                callback.onError(RuntimeException("getAll: request error"))
             }
         })
     }
@@ -51,9 +51,8 @@ class PostRepositoryImpl : PostRepository {
             }
 
             override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                TODO("Not yet implemented")
+                callback.onError(RuntimeException("likeById: request error"))
             }
-
         })
     }
 
@@ -79,12 +78,12 @@ class PostRepositoryImpl : PostRepository {
             }
 
             override fun onFailure(call: retrofit2.Call<Unit>, t: Throwable) {
-                TODO("Not yet implemented")
+                callback.onError(RuntimeException("removeById: request error"))
             }
         })
     }
 
-    override fun saveByIdAsync(post: Post, callback: PostRepository.Callback<Post>) {
+    override fun savePostAsync(post: Post, callback: PostRepository.Callback<Post>) {
         PostsApi.retrofitService.save(post).enqueue(object : retrofit2.Callback<Post> {
             override fun onResponse(
                 call: retrofit2.Call<Post>,
@@ -101,7 +100,7 @@ class PostRepositoryImpl : PostRepository {
             }
 
             override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                TODO("Not yet implemented")
+                callback.onError(RuntimeException("save: request error"))
             }
         })
     }
