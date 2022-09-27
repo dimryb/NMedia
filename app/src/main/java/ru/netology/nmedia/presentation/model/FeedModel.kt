@@ -1,4 +1,4 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.model
 
 import ru.netology.nmedia.domain.Post
 

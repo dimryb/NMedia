@@ -1,4 +1,4 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.viewholder
 
 import ru.netology.nmedia.domain.Post
 

@@ -1,14 +1,16 @@
-package ru.netology.nmedia.presentation
+package ru.netology.nmedia.presentation.viewholder
 
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.presentation.util.CounterFormatter
+import ru.netology.nmedia.presentation.view.*
 
 class PostViewHolder(
     private val binding: CardPostBinding,
@@ -46,7 +48,8 @@ class PostViewHolder(
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
-                        setMediaImage(mediaImageView, post.attachment.url)
+
+                        mediaImageView.loadImageMedia(post.attachment.url)
                     }
                     else -> {
                         mediaImageView.setImageResource(R.mipmap.media)
@@ -56,26 +59,8 @@ class PostViewHolder(
                 }
             }
 
-            setAuthorAvatar(avatarImageView, post.authorAvatar)
+            avatarImageView.loadAuthorAvatar(post.authorAvatar)
         }
-    }
-
-    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
-        Glide.with(image)
-            .load(avatarUrl)
-            .transform(RoundedCorners(70))
-            .placeholder(R.drawable.ic_loading_140dp)
-            .error(R.drawable.ic_error_140dp)
-            .timeout(10_000)
-            .into(image)
-    }
-
-    private fun setMediaImage(image: ImageView, imageUrl: String) {
-        Glide.with(image)
-            .load(imageUrl)
-            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
-            .timeout(10_000)
-            .into(image)
     }
 
     private fun setupClickListeners(cardPostBinding: CardPostBinding, post: Post) {

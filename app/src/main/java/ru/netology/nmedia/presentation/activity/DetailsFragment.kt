@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.presentation.activity
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,8 +15,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
-import ru.netology.nmedia.presentation.CounterFormatter
-import ru.netology.nmedia.presentation.PostViewModel
+import ru.netology.nmedia.presentation.util.CounterFormatter
+import ru.netology.nmedia.presentation.view.loadAuthorAvatar
+import ru.netology.nmedia.presentation.view.loadImageMedia
+import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
@@ -58,7 +60,6 @@ class DetailsFragment : Fragment() {
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
 
-            //if (post.video.isNullOrBlank()) {
             if (post.attachment == null) {
                 mediaImageView.setImageResource(0)
                 mediaTextView.text = null
@@ -69,7 +70,7 @@ class DetailsFragment : Fragment() {
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
-                        setMediaImage(mediaImageView, post.attachment.url)
+                        mediaImageView.loadImageMedia(post.attachment.url)
                     }
                     else -> {
                         mediaImageView.setImageResource(R.mipmap.media)
@@ -79,26 +80,8 @@ class DetailsFragment : Fragment() {
                 }
             }
 
-            setAuthorAvatar(avatarImageView, post.authorAvatar)
+            avatarImageView.loadAuthorAvatar(post.authorAvatar)
         }
-    }
-
-    private fun setAuthorAvatar(image: ImageView, avatarUrl: String) {
-        Glide.with(image)
-            .load(avatarUrl)
-            .transform(RoundedCorners(70))
-            .placeholder(R.drawable.ic_loading_140dp)
-            .error(R.drawable.ic_error_140dp)
-            .timeout(10_000)
-            .into(image)
-    }
-
-    private fun setMediaImage(image: ImageView, imageUrl: String) {
-        Glide.with(image)
-            .load(imageUrl)
-            .override(image.drawable.intrinsicWidth) // TODO: разобраться как правильно определить необходимые размеры изображения
-            .timeout(10_000)
-            .into(image)
     }
 
     private fun observeViewModel(post: Post) {
