@@ -2,7 +2,7 @@ package ru.netology.nmedia.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import ru.netology.nmedia.data.PostDao
+import ru.netology.nmedia.data.dao.PostDao
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.domain.Post

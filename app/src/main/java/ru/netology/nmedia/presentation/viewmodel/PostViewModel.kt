@@ -1,16 +1,14 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppDb
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.model.FeedModel
+import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -27,43 +25,58 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(application).postDao())
-    private val _data = MutableLiveData(FeedModel())
-    val data: LiveData<FeedModel>
-        get() = _data
+    val data: LiveData<FeedModel> = repository.data.map {
+        FeedModel(it, it.isEmpty())
+    }
+    private val _state = MutableLiveData<FeedModelState>()
+    val state: LiveData<FeedModelState>
+        get() = _state
+
     val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
     init {
-        loadPosts(swipeRefresh = false)
+        loadPosts()
     }
 
-    fun loadPosts(swipeRefresh: Boolean) {
+    fun loadPosts() {
         viewModelScope.launch {
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(FeedModel(posts = old, loading = true, swipeRefresh = swipeRefresh))
+            _state.value = FeedModelState.Loading
             try {
-                val posts = repository.getAll()
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+                repository.getAll()
+                _state.value = FeedModelState.Idle
             } catch (e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _state.value = FeedModelState.Error
+            }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _state.value = FeedModelState.Refresh
+            try {
+                repository.getAll()
+                _state.value = FeedModelState.Idle
+            } catch (e: Exception) {
+                _state.value = FeedModelState.Error
             }
         }
     }
 
     fun like(post: Post) {
         viewModelScope.launch {
-            try {
-                val post = repository.likeById(post.id, !post.likedByMe)
-                val old = _data.value?.posts.orEmpty()
-                val new = old.map {
-                    if (post.id == it.id) post else it
-                }
-                _data.postValue(FeedModel(posts = new))
-            } catch (e: Exception) {
-                _data.postValue(FeedModel(error = true))
-            }
+//            try {
+//                val post = repository.likeById(post.id, !post.likedByMe)
+//                val old = _data.value?.posts.orEmpty()
+//                val new = old.map {
+//                    if (post.id == it.id) post else it
+//                }
+//                _data.postValue(FeedModel(posts = new))
+//            } catch (e: Exception) {
+//                _data.postValue(FeedModel(error = true))
+//            }
         }
     }
 
@@ -81,20 +94,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         viewModelScope.launch {
-            try {
-                edited.value?.let { post ->
-                    val result = repository.save(post)
-                    val old = _data.value?.posts.orEmpty()
-                    val new = old.map {
-                        if (result.id == it.id) result else it
-                    }
-                    val posts = if (post.id == 0L) listOf(result) + old else new
-                    _data.postValue(FeedModel(posts = posts))
-                    _postCreated.postValue(Unit)
-                }
-            } catch (e: Exception) {
-                _data.postValue(FeedModel(error = true))
-            }
+//            try {
+//                edited.value?.let { post ->
+//                    val result = repository.save(post)
+//                    val old = _data.value?.posts.orEmpty()
+//                    val new = old.map {
+//                        if (result.id == it.id) result else it
+//                    }
+//                    val posts = if (post.id == 0L) listOf(result) + old else new
+//                    _data.postValue(FeedModel(posts = posts))
+//                    _postCreated.postValue(Unit)
+//                }
+//            } catch (e: Exception) {
+//                _data.postValue(FeedModel(error = true))
+//            }
         }
         edited.value = empty
     }
