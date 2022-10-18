@@ -84,7 +84,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun removeById(id: Long) {
         viewModelScope.launch {
-            repository.removeById(id)
+            try {
+                repository.removeById(id)
+                _state.value = FeedModelState.Idle
+            } catch (e: Exception) {
+                _state.value = FeedModelState.Error
+            }
         }
     }
 
