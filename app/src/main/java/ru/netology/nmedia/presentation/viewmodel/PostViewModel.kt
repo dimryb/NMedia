@@ -67,16 +67,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun like(post: Post) {
         viewModelScope.launch {
-//            try {
-//                val post = repository.likeById(post.id, !post.likedByMe)
-//                val old = _data.value?.posts.orEmpty()
-//                val new = old.map {
-//                    if (post.id == it.id) post else it
-//                }
-//                _data.postValue(FeedModel(posts = new))
-//            } catch (e: Exception) {
-//                _data.postValue(FeedModel(error = true))
-//            }
+            try {
+                repository.likeById(post.id, !post.likedByMe)
+                _state.value = FeedModelState.Idle
+            } catch (e: Exception) {
+                _state.value = FeedModelState.Error
+            }
         }
     }
 
@@ -94,6 +90,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         viewModelScope.launch {
+            _postCreated.postValue(Unit)
 //            try {
 //                edited.value?.let { post ->
 //                    val result = repository.save(post)

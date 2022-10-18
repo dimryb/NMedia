@@ -23,11 +23,18 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
 
     override suspend fun removeById(id: Long) {
+
         TODO("Not yet implemented")
     }
 
     override suspend fun likeById(id: Long, likedByMe: Boolean): Post {
-        TODO("Not yet implemented")
+        postDao.likeById(id)
+        val post = if (likedByMe)
+            PostsApi.retrofitService.likeById(id)
+        else
+            PostsApi.retrofitService.dislikeById(id)
+        postDao.insert(PostEntity.fromDto(post))
+        return post
     }
 
     override suspend fun shareById(id: Long): Post {
