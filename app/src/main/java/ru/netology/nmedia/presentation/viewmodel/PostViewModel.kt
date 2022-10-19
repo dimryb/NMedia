@@ -94,22 +94,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun save() {
-        viewModelScope.launch {
+        edited.value?.let { post ->
             _postCreated.postValue(Unit)
-//            try {
-//                edited.value?.let { post ->
-//                    val result = repository.save(post)
-//                    val old = _data.value?.posts.orEmpty()
-//                    val new = old.map {
-//                        if (result.id == it.id) result else it
-//                    }
-//                    val posts = if (post.id == 0L) listOf(result) + old else new
-//                    _data.postValue(FeedModel(posts = posts))
-//                    _postCreated.postValue(Unit)
-//                }
-//            } catch (e: Exception) {
-//                _data.postValue(FeedModel(error = true))
-//            }
+            viewModelScope.launch {
+                try {
+                    repository.save(post)
+                    _state.value = FeedModelState.Idle
+                } catch (e: Exception) {
+                    _state.value = FeedModelState.Error
+                }
+            }
         }
         edited.value = empty
     }

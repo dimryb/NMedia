@@ -19,7 +19,10 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
 
     override suspend fun save(post: Post): Post {
-        TODO("Not yet implemented")
+        postDao.save(PostEntity.fromDto(post))
+        val savedPost = PostsApi.retrofitService.save(post)
+        postDao.save(PostEntity.fromDto(savedPost))
+        return savedPost
     }
 
     override suspend fun removeById(id: Long) {
