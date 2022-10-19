@@ -77,9 +77,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun share(id: Long) {
-        viewModelScope.launch {
-            repository.shareById(id)
-        }
+//        TODO("Not yet implemented")
+//        viewModelScope.launch {
+//            repository.shareById(id)
+//        }
     }
 
     fun removeById(id: Long) {
