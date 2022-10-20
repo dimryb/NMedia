@@ -12,11 +12,15 @@ interface PostDao {
     @Query("SELECT * FROM PostEntity ORDER BY id DESC")
     fun getAll(): LiveData<List<PostEntity>>
 
-    @Insert(onConflict = REPLACE)
-    suspend fun insert(post: PostEntity)
+    fun assignPostId(post: PostEntity) = if (!post.isLocal) post.copy(localId = post.id) else post
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(posts: List<PostEntity>)
+    suspend fun insertDao(post: PostEntity)
+    suspend fun insert(post: PostEntity) = insertDao(assignPostId(post))
+
+    @Insert(onConflict = REPLACE)
+    suspend fun insertDao(posts: List<PostEntity>)
+    suspend fun insert(posts: List<PostEntity>) = insertDao(posts.map(::assignPostId))
 
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)

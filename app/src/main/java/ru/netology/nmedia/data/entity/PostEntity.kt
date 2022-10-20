@@ -8,6 +8,9 @@ import ru.netology.nmedia.domain.Post
 @Entity
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
+    val localId: Long = 0,
+    val isLocal: Boolean = false,
+
     val id: Long = 0,
     val author: String,
     val authorAvatar: String,
@@ -23,6 +26,9 @@ data class PostEntity(
     val attachmentType: String? = null,
 ) {
     fun toDto(): Post = Post(
+        localId = localId,
+        isLocal = isLocal,
+
         id = id,
         author = author,
         authorAvatar = authorAvatar,
@@ -43,13 +49,16 @@ data class PostEntity(
                     )
                 }
             }
-        }
+        },
     )
 
     companion object {
         fun fromDto(post: Post): PostEntity =
             with(post){
             return PostEntity(
+                localId = localId,
+                isLocal = isLocal,
+
                 id = id,
                 author = author,
                 authorAvatar = authorAvatar,

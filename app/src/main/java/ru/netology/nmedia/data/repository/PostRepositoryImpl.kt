@@ -36,6 +36,13 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post){
         try {
+            val localPost = if(post.id == 0L){
+                post.copy(
+                    localId = 1,
+                    isLocal = true
+                )
+            } else post
+            postDao.insert(PostEntity.fromDto(localPost))
             val response = PostsApi.retrofitService.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
