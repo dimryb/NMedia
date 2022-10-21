@@ -14,7 +14,6 @@ import ru.netology.nmedia.error.UnknownError
 
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
-    private var addId = 0L
 
     override val data: LiveData<List<Post>> = postDao.getAll().map {
         it.map(PostEntity::toDto)
@@ -43,6 +42,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
+                author = "Student"
             )
             postDao.insert(PostEntity.fromDto(localPost))
             val response = PostsApi.retrofitService.save(post)

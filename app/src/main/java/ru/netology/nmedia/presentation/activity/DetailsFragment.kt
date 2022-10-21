@@ -13,6 +13,7 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.util.CounterFormatter
@@ -50,6 +51,15 @@ class DetailsFragment : Fragment() {
         observeViewModel(args.post)
     }
 
+    private fun setLocalButton(fragmentDetailsBinding: FragmentDetailsBinding, post: Post){
+        with(fragmentDetailsBinding) {
+            localButton.visibility = if (post.author == "Student") View.VISIBLE else View.INVISIBLE
+            localButton.setIconResource(
+                if (post.isLocal) R.drawable.ic_local else R.drawable.ic_not_local
+            )
+        }
+    }
+
     private fun setContent(post: Post) {
         with(binding) {
             authorTextView.text = post.author
@@ -59,6 +69,7 @@ class DetailsFragment : Fragment() {
             likesButton.isChecked = post.likedByMe
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
+            setLocalButton(this, post)
 
             if (post.attachment == null) {
                 mediaImageView.setImageResource(0)

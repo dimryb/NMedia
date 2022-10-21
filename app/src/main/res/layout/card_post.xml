@@ -124,13 +124,25 @@
         style="@style/Widget.AppTheme.CounterButton.View"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="0dp"
         android:checkable="false"
         android:contentDescription="@string/description_post_view"
         app:icon="@drawable/ic_views"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/localButton"
         app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
         tools:text="789К" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/localButton"
+        style="@style/Widget.AppTheme.CounterButton.Local"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:checkable="false"
+        android:contentDescription="@string/description_post_local"
+        app:icon="@drawable/ic_local"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomBarrier"/>
 
     <LinearLayout
         android:id="@+id/media"

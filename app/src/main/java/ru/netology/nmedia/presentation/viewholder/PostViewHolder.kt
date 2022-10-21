@@ -28,6 +28,15 @@ class PostViewHolder(
         }
     }
 
+    private fun setLocalButton(cardPostBinding: CardPostBinding, post: Post){
+        with(cardPostBinding) {
+            localButton.visibility = if (post.author == "Student") View.VISIBLE else View.INVISIBLE
+            localButton.setIconResource(
+                if (post.isLocal) R.drawable.ic_local else R.drawable.ic_not_local
+            )
+        }
+    }
+
     private fun setContent(cardPostBinding: CardPostBinding, post: Post) {
         with(cardPostBinding) {
             authorTextView.text = post.author
@@ -37,6 +46,7 @@ class PostViewHolder(
             likesButton.isChecked = post.likedByMe
             shareButton.text = formatter.counterCompression(post.sharedCount)
             viewsButton.text = formatter.counterCompression(post.viewCount)
+            setLocalButton(cardPostBinding, post)
 
             if (post.attachment == null) {
                 mediaImageView.setImageResource(0)
