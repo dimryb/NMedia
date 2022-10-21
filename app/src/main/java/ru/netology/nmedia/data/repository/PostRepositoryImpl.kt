@@ -14,6 +14,8 @@ import ru.netology.nmedia.error.UnknownError
 
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
+    private var addId = 0L
+
     override val data: LiveData<List<Post>> = postDao.getAll().map {
         it.map(PostEntity::toDto)
     }
@@ -34,14 +36,14 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    override suspend fun save(post: Post){
+    private fun getMaxId(): Long = data.value?.let { post -> post.maxBy { it.id } }?.id ?: 0L
+
+    override suspend fun save(post: Post) {
         try {
-            val localPost = if(post.id == 0L){
-                post.copy(
-                    localId = 1,
-                    isLocal = true
-                )
-            } else post
+            val localPost = post.copy(
+                id = if (post.id == 0L) getMaxId() + 1 else post.id,
+                isLocal = true,
+            )
             postDao.insert(PostEntity.fromDto(localPost))
             val response = PostsApi.retrofitService.save(post)
             if (!response.isSuccessful) {
@@ -49,6 +51,9 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
+            if (localPost.id != body.id) {
+                removeLocal(localPost)
+            }
             postDao.insert(PostEntity.fromDto(body))
         } catch (e: IOException) {
             throw NetworkError
@@ -56,6 +61,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             throw UnknownError
         }
     }
+
+    private suspend fun removeLocal(post: Post) = postDao.removeById(post.id)
 
     override suspend fun removeById(id: Long) {
         try {
@@ -71,7 +78,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    override suspend fun likeById(id: Long, likedByMe: Boolean){
+    override suspend fun likeById(id: Long, likedByMe: Boolean) {
         try {
             val response = if (likedByMe)
                 PostsApi.retrofitService.likeById(id)
