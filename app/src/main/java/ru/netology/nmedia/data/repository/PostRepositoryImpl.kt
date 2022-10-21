@@ -78,12 +78,19 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    override suspend fun likeById(id: Long, likedByMe: Boolean) {
+    override suspend fun likeById(post: Post) {
+        if (post.isLocal) return
+
         try {
-            val response = if (likedByMe)
-                PostsApi.retrofitService.likeById(id)
-            else
-                PostsApi.retrofitService.dislikeById(id)
+            val localPost = post.copy(
+                likedByMe = !post.likedByMe,
+                likes = if (post.likedByMe) post.likes - 1 else post.likes + 1,
+                isLocal = true,
+            )
+            postDao.insert(PostEntity.fromDto(localPost))
+            val response = with(PostsApi.retrofitService) {
+                if (post.likedByMe) ::dislikeById else ::likeById
+            }(post.id)
 
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
