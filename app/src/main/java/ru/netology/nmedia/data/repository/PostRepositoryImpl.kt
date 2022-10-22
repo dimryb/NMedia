@@ -1,11 +1,14 @@
 package ru.netology.nmedia.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import okio.IOException
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.data.dao.PostDao
 import ru.netology.nmedia.data.entity.PostEntity
+import ru.netology.nmedia.data.entity.toDto
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.error.ApiError
@@ -15,9 +18,7 @@ import ru.netology.nmedia.error.UnknownError
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
-    override val data: LiveData<List<Post>> = postDao.getAll().map {
-        it.map(PostEntity::toDto)
-    }
+    override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
 
     override suspend fun getAll() {
         try {
@@ -35,7 +36,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    private fun getMaxId(): Long = data.value?.let { post -> post.maxBy { it.id } }?.id ?: 0L
+    private fun getMaxId(): Long =
+        data.asLiveData(Dispatchers.Default).value?.let { post -> post.maxBy { it.id } }?.id ?: 0L
 
     override suspend fun save(post: Post) {
         try {
