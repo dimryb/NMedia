@@ -28,6 +28,12 @@
         parent="Widget.AppTheme.CounterButton">
     </style>
 
+    <style name="Widget.AppTheme.CounterButton.Local"
+        parent="Widget.AppTheme.Button">
+        <item name="android:minWidth">@dimen/icon_button_min_height</item>
+        <item name="android:minHeight">@dimen/icon_button_min_height</item>
+    </style>
+
     <style name="Widget.AppTheme.Button.Options"
         parent="Widget.AppTheme.Button">
     </style>

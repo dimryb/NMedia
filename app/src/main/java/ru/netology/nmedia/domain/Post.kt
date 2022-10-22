@@ -16,5 +16,7 @@ data class Post(
     val viewCount: Long = 0,
     val video: String? = null,
     val attachment: Attachment? = null,
+
+    val isLocal: Boolean = false,
 ) : Parcelable
 
