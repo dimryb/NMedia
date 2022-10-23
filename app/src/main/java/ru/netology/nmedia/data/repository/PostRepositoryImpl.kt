@@ -140,4 +140,12 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun visibleAll() {
+        try {
+            postDao.updateVisibleAll()
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
 }

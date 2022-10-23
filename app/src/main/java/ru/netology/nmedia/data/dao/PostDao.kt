@@ -24,6 +24,9 @@ interface PostDao {
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)
 
+    @Query("UPDATE PostEntity SET visible = 1")
+    suspend fun updateVisibleAll()
+
     suspend fun save(post: PostEntity) =
         if (post.id == 0L) insert(post) else updateContentById(post.id, post.content)
 

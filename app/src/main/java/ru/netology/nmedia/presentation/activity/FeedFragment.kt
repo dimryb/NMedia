@@ -91,7 +91,7 @@ class FeedFragment : Fragment() {
                         viewModel.refresh()
                     }.show()
             }
-            binding.swiperefresh.isRefreshing = state is FeedModelState.Refresh
+            binding.swipeRefresh.isRefreshing = state is FeedModelState.Refresh
         }
 
         viewModel.edited.observe(viewLifecycleOwner) { edited ->
@@ -107,6 +107,7 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.invisibleCount.observe(viewLifecycleOwner){
+            binding.newPostsButton.visibility = if (it> 0) View.VISIBLE else View.INVISIBLE
             println("Invisible count: $it")
         }
     }
@@ -118,9 +119,12 @@ class FeedFragment : Fragment() {
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
-        binding.swiperefresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
-            binding.swiperefresh.isRefreshing = false
+            binding.swipeRefresh.isRefreshing = false
+        }
+        binding.newPostsButton.setOnClickListener {
+            viewModel.showNewPosts()
         }
     }
 

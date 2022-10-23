@@ -12,4 +12,5 @@ interface PostRepository {
     suspend fun removeById(id: Long)
     suspend fun likeById(post: Post)
     suspend fun shareById(id: Long)
+    suspend fun visibleAll()
 }
