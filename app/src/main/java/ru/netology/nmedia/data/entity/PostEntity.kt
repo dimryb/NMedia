@@ -49,6 +49,7 @@ data class PostEntity(
         },
 
         isLocal = isLocal,
+        visible = visible,
     )
 
     companion object {
@@ -70,6 +71,7 @@ data class PostEntity(
                 attachmentType = attachment?.type,
 
                 isLocal = isLocal,
+                visible = visible,
             )
         }
     }

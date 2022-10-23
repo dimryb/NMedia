@@ -105,6 +105,10 @@ class FeedFragment : Fragment() {
             // TODO Дз
             println("Newer count: $it")
         }
+
+        viewModel.invisibleCount.observe(viewLifecycleOwner){
+            println("Invisible count: $it")
+        }
     }
 
     private fun setupListeners() {

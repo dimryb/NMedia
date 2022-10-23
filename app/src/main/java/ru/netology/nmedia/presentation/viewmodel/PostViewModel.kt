@@ -3,6 +3,7 @@ package ru.netology.nmedia.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppDb
@@ -27,7 +28,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(application).postDao())
-    val data: LiveData<FeedModel> = repository.data.map (::FeedModel ).asLiveData(Dispatchers.Default)
+    val data: LiveData<FeedModel> = repository.data.map(::FeedModel).asLiveData(Dispatchers.Default)
+
+    val invisibleCount: LiveData<Int> =
+        repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
+
     private val _state = MutableLiveData<FeedModelState>()
     val state: LiveData<FeedModelState>
         get() = _state

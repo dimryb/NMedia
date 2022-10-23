@@ -4,10 +4,7 @@ import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import okio.IOException
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.data.dao.PostDao
@@ -33,11 +30,13 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 }
 
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
-                postDao.insert(body.toEntity().map{
+                postDao.insert(body.toEntity().map {
                     it.copy(visible = false)
                 })
+
                 emit(body.size)
-                delay(10_000L)
+                println("newerCount ${body.size}")
+                delay(2_000L)
             }
         } catch (e: CancellationException) {
             throw e
@@ -46,7 +45,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         } catch (e: Exception) {
             throw UnknownError
         }
-
     }
 
     override suspend fun getAll() {
@@ -66,7 +64,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
     }
 
     private fun getMaxId(): Long =
-        data.asLiveData(Dispatchers.Default).value?.let { post -> post.maxBy { it.id } }?.id ?: 0L
+        data.asLiveData(Dispatchers.Default).value?.let { posts -> posts.maxBy { it.id } }?.id ?: 0L
 
     override suspend fun save(post: Post) {
         try {
