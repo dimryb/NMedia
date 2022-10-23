@@ -23,6 +23,7 @@ data class PostEntity(
     val attachmentType: String? = null,
 
     val isLocal: Boolean = false,
+    val visible: Boolean = true,
 ) {
     fun toDto(): Post = Post(
         id = id,

@@ -1,7 +1,11 @@
 package ru.netology.nmedia.data.repository
 
 import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import okio.IOException
@@ -19,6 +23,31 @@ import ru.netology.nmedia.error.UnknownError
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+
+    override fun getNewerCount(firstId: Long): Flow<Int> = flow {
+        try {
+            while (true) {
+                val response = PostsApi.retrofitService.getNewer(firstId)
+                if (!response.isSuccessful) {
+                    throw ApiError(response.code(), response.message())
+                }
+
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                postDao.insert(body.toEntity().map{
+                    it.copy(visible = false)
+                })
+                emit(body.size)
+                delay(10_000L)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+
+    }
 
     override suspend fun getAll() {
         try {

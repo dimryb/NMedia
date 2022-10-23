@@ -12,6 +12,9 @@ interface PostDao {
     @Query("SELECT * FROM PostEntity ORDER BY id DESC")
     fun getAll(): Flow<List<PostEntity>>
 
+    @Query("SELECT * FROM PostEntity WHERE visible = 1 ORDER BY id DESC")
+    fun getVisible(): Flow<List<PostEntity>>
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(post: PostEntity)
 

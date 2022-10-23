@@ -100,6 +100,11 @@ class FeedFragment : Fragment() {
             }
             launchEditPost()
         }
+
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            // TODO Дз
+            println("Newer count: $it")
+        }
     }
 
     private fun setupListeners() {
