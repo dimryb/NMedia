@@ -30,6 +30,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         PostRepositoryImpl(AppDb.getInstance(application).postDao())
     val data: LiveData<FeedModel> = repository.data.map(::FeedModel).asLiveData(Dispatchers.Default)
 
+    val dataVisible: LiveData<FeedModel> =
+        repository.dataVisible.map(::FeedModel).asLiveData(Dispatchers.Default)
+
     val invisibleCount: LiveData<Int> =
         repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
 

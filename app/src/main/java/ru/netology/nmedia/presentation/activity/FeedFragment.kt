@@ -78,7 +78,7 @@ class FeedFragment : Fragment() {
 
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { state ->
+        viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
         }

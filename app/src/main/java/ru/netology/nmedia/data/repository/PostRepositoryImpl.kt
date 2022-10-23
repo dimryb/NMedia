@@ -21,9 +21,13 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
 
+    override val dataVisible =
+        postDao.getVisible().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
             while (true) {
+                delay(2_000L)
                 val response = PostsApi.retrofitService.getNewer(firstId)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
@@ -36,7 +40,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
                 emit(body.size)
                 println("newerCount ${body.size}")
-                delay(2_000L)
             }
         } catch (e: CancellationException) {
             throw e
@@ -55,7 +58,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(body.toEntity())
+            postDao.insert(body.map { it.copy(visible = true) }.toEntity())
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
