@@ -87,7 +87,7 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state is FeedModelState.Loading
             if (state is FeedModelState.Error) {
                 Snackbar.make(binding.root, "Error", Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry_loading){
+                    .setAction(R.string.retry_loading) {
                         viewModel.refresh()
                     }.show()
             }
@@ -102,13 +102,17 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.newerCount.observe(viewLifecycleOwner) {
-            // TODO Дз
-            println("Newer count: $it")
+            //println("Newer count: $it")
         }
 
-        viewModel.invisibleCount.observe(viewLifecycleOwner){
-            binding.newPostsButton.visibility = if (it> 0) View.VISIBLE else View.INVISIBLE
+        viewModel.invisibleCount.observe(viewLifecycleOwner) {
+            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
             println("Invisible count: $it")
+        }
+
+        viewModel.newPosts.observe(viewLifecycleOwner) {
+            binding.postsList.scrollToPosition(0)
+            println("newPosts")
         }
     }
 
@@ -125,6 +129,7 @@ class FeedFragment : Fragment() {
         }
         binding.newPostsButton.setOnClickListener {
             viewModel.showNewPosts()
+            println("newPostsButton")
         }
     }
 
