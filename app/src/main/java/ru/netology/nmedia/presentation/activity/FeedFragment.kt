@@ -79,7 +79,12 @@ class FeedFragment : Fragment() {
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
         viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
+            val newPost = state.posts.size > adapter.currentList.size
+            adapter.submitList(state.posts) {
+                if (newPost) {
+                    binding.postsList.scrollToPosition(0)
+                }
+            }
             binding.emptyText.isVisible = state.empty
         }
 
@@ -109,11 +114,6 @@ class FeedFragment : Fragment() {
             binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
             println("Invisible count: $it")
         }
-
-        viewModel.newPosts.observe(viewLifecycleOwner) {
-            binding.postsList.scrollToPosition(0)
-            println("newPosts")
-        }
     }
 
     private fun setupListeners() {
@@ -129,7 +129,6 @@ class FeedFragment : Fragment() {
         }
         binding.newPostsButton.setOnClickListener {
             viewModel.showNewPosts()
-            println("newPostsButton")
         }
     }
 

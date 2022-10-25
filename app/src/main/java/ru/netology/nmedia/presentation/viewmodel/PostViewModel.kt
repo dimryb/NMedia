@@ -3,8 +3,6 @@ package ru.netology.nmedia.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppDb
@@ -51,10 +49,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-    private val _newPosts = SingleLiveEvent<Unit>()
-    val newPosts: LiveData<Unit>
-        get() = _newPosts
-
     init {
         loadPosts()
     }
@@ -63,7 +57,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 repository.visibleAll()
-                _newPosts.postValue(Unit)
                 _state.value = FeedModelState.Idle
             } catch (e: Exception) {
                 _state.value = FeedModelState.Error
