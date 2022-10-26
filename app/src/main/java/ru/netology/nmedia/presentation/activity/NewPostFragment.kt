@@ -1,12 +1,12 @@
 package ru.netology.nmedia.presentation.activity
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 import ru.netology.nmedia.util.AndroidUtils
@@ -26,6 +26,24 @@ class NewPostFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.create_posts_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+                when (menuItem.itemId){
+                    R.id.save -> {
+                        viewModel.editContent(binding.contentEditText.text.toString())
+                        viewModel.save()
+                        AndroidUtils.hideKeyboard(requireView())
+                        true
+                    }
+                    else -> false
+                }
+
+        }, viewLifecycleOwner)
+
         _binding = FragmentNewPostBinding.inflate(
             inflater,
             container,
@@ -48,11 +66,7 @@ class NewPostFragment : Fragment() {
 
     private fun setupClickListeners() {
 
-        binding.saveButton.setOnClickListener {
-            viewModel.editContent(binding.contentEditText.text.toString())
-            viewModel.save()
-            AndroidUtils.hideKeyboard(requireView())
-        }
+
     }
 
     companion object {

@@ -22,4 +22,5 @@
     <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
     <string name="description_post_local">Local</string>
     <string name="there_are_posts">There are posts</string>
+    <string name="save">Save</string>
 </resources>
