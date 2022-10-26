@@ -23,6 +23,7 @@ data class PostEntity(
     val attachmentType: String? = null,
 
     val isLocal: Boolean = false,
+    val visible: Boolean = true,
 ) {
     fun toDto(): Post = Post(
         id = id,
@@ -48,6 +49,7 @@ data class PostEntity(
         },
 
         isLocal = isLocal,
+        visible = visible,
     )
 
     companion object {
@@ -69,6 +71,7 @@ data class PostEntity(
                 attachmentType = attachment?.type,
 
                 isLocal = isLocal,
+                visible = visible,
             )
         }
     }

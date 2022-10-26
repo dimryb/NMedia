@@ -1,11 +1,15 @@
 package ru.netology.nmedia.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import okio.IOException
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.data.dao.PostDao
 import ru.netology.nmedia.data.entity.PostEntity
+import ru.netology.nmedia.data.entity.toDto
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.error.ApiError
@@ -15,8 +19,35 @@ import ru.netology.nmedia.error.UnknownError
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
-    override val data: LiveData<List<Post>> = postDao.getAll().map {
-        it.map(PostEntity::toDto)
+    override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+
+    override val dataVisible =
+        postDao.getVisible().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+
+    override fun getNewerCount(firstId: Long): Flow<Int> = flow {
+        try {
+            while (true) {
+                delay(2_000L)
+                val response = PostsApi.retrofitService.getNewer(firstId)
+                if (!response.isSuccessful) {
+                    throw ApiError(response.code(), response.message())
+                }
+
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                postDao.insert(body.toEntity().map {
+                    it.copy(visible = false)
+                })
+
+                emit(body.size)
+                println("newerCount ${body.size}")
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
     override suspend fun getAll() {
@@ -27,7 +58,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(body.toEntity())
+            postDao.insert(body.map { it.copy(visible = true) }.toEntity())
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -35,7 +66,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    private fun getMaxId(): Long = data.value?.let { post -> post.maxBy { it.id } }?.id ?: 0L
+    private fun getMaxId(): Long =
+        data.asLiveData(Dispatchers.Default).value?.let { posts -> posts.maxBy { it.id } }?.id ?: 0L
 
     override suspend fun save(post: Post) {
         try {
@@ -106,6 +138,14 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun shareById(id: Long) {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun visibleAll() {
+        try {
+            postDao.updateVisibleAll()
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
 }

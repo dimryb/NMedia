@@ -78,8 +78,13 @@ class FeedFragment : Fragment() {
 
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
+        viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
+            val newPost = state.posts.size > adapter.currentList.size
+            adapter.submitList(state.posts) {
+                if (newPost) {
+                    binding.postsList.scrollToPosition(0)
+                }
+            }
             binding.emptyText.isVisible = state.empty
         }
 
@@ -87,11 +92,11 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state is FeedModelState.Loading
             if (state is FeedModelState.Error) {
                 Snackbar.make(binding.root, "Error", Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry_loading){
+                    .setAction(R.string.retry_loading) {
                         viewModel.refresh()
                     }.show()
             }
-            binding.swiperefresh.isRefreshing = state is FeedModelState.Refresh
+            binding.swipeRefresh.isRefreshing = state is FeedModelState.Refresh
         }
 
         viewModel.edited.observe(viewLifecycleOwner) { edited ->
@@ -99,6 +104,15 @@ class FeedFragment : Fragment() {
                 return@observe
             }
             launchEditPost()
+        }
+
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            //println("Newer count: $it")
+        }
+
+        viewModel.invisibleCount.observe(viewLifecycleOwner) {
+            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
+            println("Invisible count: $it")
         }
     }
 
@@ -109,9 +123,12 @@ class FeedFragment : Fragment() {
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
-        binding.swiperefresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
-            binding.swiperefresh.isRefreshing = false
+            binding.swipeRefresh.isRefreshing = false
+        }
+        binding.newPostsButton.setOnClickListener {
+            viewModel.showNewPosts()
         }
     }
 

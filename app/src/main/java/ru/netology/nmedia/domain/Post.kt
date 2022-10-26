@@ -18,5 +18,6 @@ data class Post(
     val attachment: Attachment? = null,
 
     val isLocal: Boolean = false,
+    val visible: Boolean = true,
 ) : Parcelable
 
