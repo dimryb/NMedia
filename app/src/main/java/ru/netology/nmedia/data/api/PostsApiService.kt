@@ -1,5 +1,6 @@
 package ru.netology.nmedia.data.api
 
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -8,6 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import ru.netology.nmedia.BuildConfig
+import ru.netology.nmedia.domain.Media
 import ru.netology.nmedia.domain.Post
 
 interface PostsApiService {
@@ -31,6 +33,16 @@ interface PostsApiService {
 
     @DELETE("posts/{id}/likes")
     suspend fun dislikeById(@Path("id") id: Long): Response<Post>
+
+    @Multipart
+    @POST("media")
+    suspend fun uploadPhoto(@Part part: MultipartBody.Part): Response<Media>
+}
+
+interface MediaApi {
+    @Multipart
+    @POST("media")
+    suspend fun uploadPhoto(@Part part: MultipartBody.Part): Response<Media>
 }
 
 object PostsApi {
@@ -52,7 +64,11 @@ object PostsApi {
         .client(okhttp)
         .build()
 
-    val retrofitService: PostsApiService by lazy {
+    val service: PostsApiService by lazy {
         retrofit.create(PostsApiService::class.java)
+    }
+
+    val serviceMedia: MediaApi by lazy {
+        retrofit.create(MediaApi::class.java)
     }
 }

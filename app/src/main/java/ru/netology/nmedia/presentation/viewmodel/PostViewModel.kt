@@ -125,14 +125,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let { post ->
-            _postCreated.postValue(Unit)
             viewModelScope.launch {
                 try {
-                    repository.save(post)
+                    _photo.value?.let { photoModel ->
+                        repository.saveWithAttachment(post, photoModel)
+                    } ?: run {
+                        repository.save(post)
+                    }
                     _state.value = FeedModelState.Idle
                 } catch (e: Exception) {
                     _state.value = FeedModelState.Error
                 }
+                _postCreated.value = Unit
             }
         }
         edited.value = empty

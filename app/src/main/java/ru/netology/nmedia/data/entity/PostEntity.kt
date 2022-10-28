@@ -1,5 +1,6 @@
 package ru.netology.nmedia.data.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.netology.nmedia.domain.Attachment
@@ -18,9 +19,8 @@ data class PostEntity(
     val sharedCount: Long = 0,
     val viewCount: Long = 0,
     val video: String? = null,
-    val attachmentUrl: String? = null,
-    val attachmentDescription: String? = null,
-    val attachmentType: String? = null,
+    @Embedded
+    val attachment: Attachment?,
 
     val isLocal: Boolean = false,
     val visible: Boolean = true,
@@ -36,17 +36,7 @@ data class PostEntity(
         sharedCount = sharedCount,
         viewCount = viewCount,
         video = video,
-        attachment = attachmentUrl?.let { url->
-            attachmentDescription?.let { description ->
-                attachmentType?.let { type ->
-                    Attachment(
-                        url = url,
-                        description = description,
-                        type = type
-                    )
-                }
-            }
-        },
+        attachment = attachment,
 
         isLocal = isLocal,
         visible = visible,
@@ -66,9 +56,7 @@ data class PostEntity(
                 sharedCount = sharedCount,
                 viewCount = viewCount,
                 video = video,
-                attachmentUrl = attachment?.url,
-                attachmentDescription = attachment?.description,
-                attachmentType = attachment?.type,
+                attachment = attachment,
 
                 isLocal = isLocal,
                 visible = visible,

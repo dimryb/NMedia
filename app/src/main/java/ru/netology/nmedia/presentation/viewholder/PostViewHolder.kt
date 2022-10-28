@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.domain.AttachmentType
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.*
@@ -54,7 +55,7 @@ class PostViewHolder(
                 media.visibility = View.GONE
             } else {
                 when (post.attachment.type) {
-                    "IMAGE" -> {
+                    AttachmentType.IMAGE -> {
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
