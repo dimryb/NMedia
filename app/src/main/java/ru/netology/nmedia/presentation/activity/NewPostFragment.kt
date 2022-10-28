@@ -2,10 +2,15 @@ package ru.netology.nmedia.presentation.activity
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.github.dhaval2404.imagepicker.ImagePicker
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
@@ -21,6 +26,19 @@ class NewPostFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
+    private val photoLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), "Image pick error", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    val uri = it.data?.data ?: return@registerForActivityResult
+                    viewModel.changePhoto(uri, uri.toFile())
+                }
+            }
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,7 +50,7 @@ class NewPostFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                when (menuItem.itemId){
+                when (menuItem.itemId) {
                     R.id.save -> {
                         viewModel.editContent(binding.contentEditText.text.toString())
                         viewModel.save()
@@ -50,11 +68,9 @@ class NewPostFragment : Fragment() {
             false
         )
         arguments?.textArg?.let(binding.contentEditText::setText)
-        setupClickListeners()
 
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            findNavController().navigateUp()
-        }
+        setupClickListeners()
+        observeViewModel()
 
         return binding.root
     }
@@ -65,8 +81,35 @@ class NewPostFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
+        binding.takePhoto.setOnClickListener {
+            ImagePicker.Builder(this)
+                .cameraOnly()
+                .maxResultSize(2048, 2048)
+                .createIntent (photoLauncher::launch)
+        }
 
+        binding.pickPhoto.setOnClickListener {
+            ImagePicker.Builder(this)
+                .galleryOnly()
+                .maxResultSize(2048, 2048)
+                .createIntent (photoLauncher::launch)
+        }
 
+        binding.removePhoto.setOnClickListener {
+            viewModel.changePhoto(null, null)
+        }
+
+    }
+
+    private fun observeViewModel() {
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
+
+        viewModel.photo.observe(viewLifecycleOwner) {
+            binding.photoLayout.isVisible = it != null
+            binding.photo.setImageURI(it?.uri)
+        }
     }
 
     companion object {

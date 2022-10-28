@@ -1,6 +1,7 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -12,6 +13,7 @@ import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.File
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -48,6 +50,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
+
+    private val _photo = MutableLiveData<PhotoModel?>(null)
+    val photo: LiveData<PhotoModel?>
+        get() = _photo
 
     init {
         loadPosts()
@@ -144,6 +150,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 return
             }
             edited.value = it.copy(content = text)
+        }
+    }
+
+    fun changePhoto(uri: Uri?, toFile: File?) {
+        _photo.value = if (uri != null && toFile != null){
+            PhotoModel(uri, toFile)
+        } else {
+            null
         }
     }
 }
