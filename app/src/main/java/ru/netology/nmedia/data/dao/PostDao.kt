@@ -15,6 +15,9 @@ interface PostDao {
     @Query("SELECT * FROM PostEntity WHERE visible = 1 ORDER BY id DESC")
     fun getVisible(): Flow<List<PostEntity>>
 
+    @Query("SELECT MAX(id) FROM PostEntity")
+    suspend fun getMaxId(): Long
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(post: PostEntity)
 

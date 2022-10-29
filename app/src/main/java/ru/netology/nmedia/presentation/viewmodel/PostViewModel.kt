@@ -127,6 +127,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun save() {
         edited.value?.let { post ->
             viewModelScope.launch {
+                _postCreated.value = Unit
                 try {
                     _photo.value?.let { photoModel ->
                         repository.saveWithAttachment(post, photoModel)
@@ -137,7 +138,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 } catch (e: Exception) {
                     _state.value = FeedModelState.Error
                 }
-                _postCreated.value = Unit
             }
         }
         edited.value = empty
@@ -154,7 +154,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             if (it.content == text) {
                 return
             }
-            edited.value = it.copy(content = text)
+            edited.value = it.copy(content = text, visible = true)
         }
     }
 
