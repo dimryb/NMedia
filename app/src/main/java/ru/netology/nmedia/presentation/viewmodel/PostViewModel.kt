@@ -57,6 +57,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
+        showNewPosts()
     }
 
     fun showNewPosts() {

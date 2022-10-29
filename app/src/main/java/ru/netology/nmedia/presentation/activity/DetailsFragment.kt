@@ -114,6 +114,9 @@ class DetailsFragment : Fragment() {
             }
             media.setOnClickListener {
                 //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+                findNavController().navigate(
+                    DetailsFragmentDirections.actionDetailsFragmentToMediaFragment(post)
+                )
             }
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
