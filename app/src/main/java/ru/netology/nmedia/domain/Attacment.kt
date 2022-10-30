@@ -7,5 +7,9 @@ import kotlinx.parcelize.Parcelize
 data class Attachment(
     val url: String = "",
     val description: String = "",
-    val type: String = "",
+    val type: AttachmentType = AttachmentType.IMAGE,
 ) : Parcelable
+
+enum class AttachmentType {
+    IMAGE
+}

@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
+import ru.netology.nmedia.domain.AttachmentType
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.loadAuthorAvatar
@@ -77,7 +78,7 @@ class DetailsFragment : Fragment() {
                 media.visibility = View.GONE
             } else {
                 when (post.attachment.type) {
-                    "IMAGE" -> {
+                    AttachmentType.IMAGE -> {
                         mediaTextView.text = null
                         mediaTextView.visibility = View.GONE
                         media.visibility = View.VISIBLE
@@ -113,6 +114,9 @@ class DetailsFragment : Fragment() {
             }
             media.setOnClickListener {
                 //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+                findNavController().navigate(
+                    DetailsFragmentDirections.actionDetailsFragmentToMediaFragment(post)
+                )
             }
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }

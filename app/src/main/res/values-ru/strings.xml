@@ -21,4 +21,9 @@
     <string name="empty_posts">Постов нет.\nЕсли создадите новый пост, то он появится здесь</string>
     <string name="description_post_local">Локально</string>
     <string name="there_are_posts">Есть посты</string>
+    <string name="save">Сохранить</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
+    <string name="remove">Удалить</string>
 </resources>

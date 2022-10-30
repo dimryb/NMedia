@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/postLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/common_spacing">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/avatarImageView"
@@ -154,16 +153,15 @@
         app:layout_constraintBottom_toTopOf="@id/bottomBarrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/postTextView"
-        >
+        app:layout_constraintTop_toBottomOf="@id/postTextView">
 
         <ImageView
             android:id="@+id/mediaImageView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/common_spacing"
-            android:contentDescription="@string/media_image"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/media_image"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -176,6 +174,7 @@
             style="@style/Widget.AppTheme.TextView.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/common_spacing"
             android:layout_marginBottom="@dimen/common_spacing"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="parent"

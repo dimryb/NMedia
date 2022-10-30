@@ -47,6 +47,9 @@ class FeedFragment : Fragment() {
 
         override fun onMedia(post: Post) {
             //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+            findNavController().navigate(
+                FeedFragmentDirections.actionFeedFragmentToMediaFragment(post)
+            )
         }
 
         override fun onDetails(post: Post) {

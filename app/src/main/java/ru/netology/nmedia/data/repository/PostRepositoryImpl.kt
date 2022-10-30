@@ -3,18 +3,24 @@ package ru.netology.nmedia.data.repository
 import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.data.dao.PostDao
 import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toDto
 import ru.netology.nmedia.data.entity.toEntity
+import ru.netology.nmedia.domain.Attachment
+import ru.netology.nmedia.domain.Media
 import ru.netology.nmedia.domain.Post
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.presentation.viewmodel.PhotoModel
 
 
 class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
@@ -28,7 +34,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         try {
             while (true) {
                 delay(2_000L)
-                val response = PostsApi.retrofitService.getNewer(firstId)
+                val response = PostsApi.service.getNewer(firstId)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -52,7 +58,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.retrofitService.getAll()
+            val response = PostsApi.service.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -66,18 +72,24 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         }
     }
 
-    private fun getMaxId(): Long =
-        data.asLiveData(Dispatchers.Default).value?.let { posts -> posts.maxBy { it.id } }?.id ?: 0L
+    private suspend fun getMaxId(): Long {
+        try {
+            return postDao.getMaxId()
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
 
     override suspend fun save(post: Post) {
         try {
+            visibleAll()
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
                 author = "Student"
             )
             postDao.insert(PostEntity.fromDto(localPost))
-            val response = PostsApi.retrofitService.save(post)
+            val response = PostsApi.service.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -86,7 +98,49 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             if (localPost.id != body.id) {
                 removeLocal(localPost)
             }
-            postDao.insert(PostEntity.fromDto(body))
+            postDao.insert(PostEntity.fromDto(body.copy(visible = true)))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun saveWithAttachment(post: Post, model: PhotoModel) {
+        try {
+            visibleAll()
+            val file = uploadFile(model)
+            val localPost = post.copy(
+                id = if (post.id == 0L) getMaxId() + 1 else post.id,
+                isLocal = true,
+                author = "Student",
+                attachment = Attachment(url = file.id)
+            )
+            postDao.insert(PostEntity.fromDto(localPost))
+            val response = PostsApi.service.save(post.copy(attachment = Attachment(url = file.id)))
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            if (localPost.id != body.id) {
+                removeLocal(localPost)
+            }
+            postDao.insert(PostEntity.fromDto(body.copy(visible = true)))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    private suspend fun uploadFile(model: PhotoModel): Media {
+        try {
+            val part = MultipartBody.Part.createFormData(
+                "file", model.file.name, model.file.asRequestBody()
+            )
+            val response = PostsApi.service.uploadPhoto(part)
+            return response.body() ?: throw ApiError(response.code(), response.message())
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -98,7 +152,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun removeById(id: Long) {
         try {
-            val response = PostsApi.retrofitService.removeById(id)
+            val response = PostsApi.service.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -120,7 +174,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 isLocal = true,
             )
             postDao.insert(PostEntity.fromDto(localPost))
-            val response = with(PostsApi.retrofitService) {
+            val response = with(PostsApi.service) {
                 if (post.likedByMe) ::dislikeById else ::likeById
             }(post.id)
 
