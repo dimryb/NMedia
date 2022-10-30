@@ -2,6 +2,7 @@ package ru.netology.nmedia.presentation.viewholder
 
 import android.view.View
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -78,12 +79,14 @@ class PostViewHolder(
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             media.setOnClickListener { onInteractionListener.onMedia(post) }
 
+            menuButton.isVisible = post.ownerByMe
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
             postLayout.setOnClickListener { onInteractionListener.onDetails(post) }
         }
     }
 
     private fun setupPopupMenu(view: View, post: Post) {
+
         PopupMenu(view.context, view).apply {
             inflate(R.menu.options_post)
             setOnMenuItemClickListener { item ->

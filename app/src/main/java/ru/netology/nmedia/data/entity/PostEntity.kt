@@ -11,6 +11,7 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val author: String,
+    val authorId: Long,
     val authorAvatar: String,
     val published: String,
     val content: String,
@@ -28,6 +29,7 @@ data class PostEntity(
     fun toDto(): Post = Post(
         id = id,
         author = author,
+        authorId = authorId,
         authorAvatar = authorAvatar,
         published = published,
         content = content,
@@ -48,6 +50,7 @@ data class PostEntity(
             return PostEntity(
                 id = id,
                 author = author,
+                authorId = authorId,
                 authorAvatar = authorAvatar,
                 published = published,
                 content = content,

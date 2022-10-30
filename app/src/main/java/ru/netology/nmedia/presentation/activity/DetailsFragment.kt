@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -93,8 +94,8 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel(post: Post) {
-        viewModel.data.observe(viewLifecycleOwner) {
-            viewModel.data.value?.posts?.find { it.id == post.id }?.let {
+        viewModel.dataAll.observe(viewLifecycleOwner) {
+            viewModel.dataAll.value?.posts?.find { it.id == post.id }?.let {
                 setContent(it)
             }
         }
@@ -114,6 +115,7 @@ class DetailsFragment : Fragment() {
                     DetailsFragmentDirections.actionDetailsFragmentToMediaFragment(post)
                 )
             }
+            menuButton.isVisible = post.ownerByMe
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
     }
