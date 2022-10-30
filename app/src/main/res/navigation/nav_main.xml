@@ -41,7 +41,7 @@
             app:destination="@id/newPostFragment" />
         <argument
             android:name="post"
-            app:argType="ru.netology.nmedia.domain.Post" />
+            app:argType="ru.netology.nmedia.domain.dto.Post" />
         <action
             android:id="@+id/action_detailsFragment_to_mediaFragment"
             app:destination="@id/mediaFragment" />
@@ -53,6 +53,6 @@
         tools:layout="@layout/fragment_media" >
         <argument
             android:name="post"
-            app:argType="ru.netology.nmedia.domain.Post" />
+            app:argType="ru.netology.nmedia.domain.dto.Post" />
     </fragment>
 </navigation>

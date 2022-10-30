@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.adapter.PostAdapter
 import ru.netology.nmedia.presentation.model.FeedModelState

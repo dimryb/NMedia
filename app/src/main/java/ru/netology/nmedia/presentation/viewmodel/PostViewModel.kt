@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent

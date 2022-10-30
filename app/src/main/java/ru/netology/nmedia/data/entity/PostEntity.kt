@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.netology.nmedia.domain.Attachment
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 
 @Entity
 data class PostEntity(

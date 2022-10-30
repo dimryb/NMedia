@@ -1,7 +1,8 @@
-package ru.netology.nmedia.domain
+package ru.netology.nmedia.domain.dto
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import ru.netology.nmedia.domain.Attachment
 
 @Parcelize
 data class Post(

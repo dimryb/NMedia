@@ -1,6 +1,6 @@
 package ru.netology.nmedia.presentation.viewholder
 
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 
 interface OnInteractionListener {
     fun onLike(post: Post)

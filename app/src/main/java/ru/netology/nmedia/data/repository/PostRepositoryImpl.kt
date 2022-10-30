@@ -1,9 +1,7 @@
 package ru.netology.nmedia.data.repository
 
-import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
@@ -15,8 +13,8 @@ import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toDto
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Attachment
-import ru.netology.nmedia.domain.Media
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Media
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError

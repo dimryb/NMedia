@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.loadAuthorAvatar
