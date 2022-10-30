@@ -1,17 +1,15 @@
 package ru.netology.nmedia.presentation.viewholder
 
 import android.view.View
-import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.domain.AttachmentType
 import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
-import ru.netology.nmedia.presentation.view.*
+import ru.netology.nmedia.presentation.view.loadAuthorAvatar
+import ru.netology.nmedia.presentation.view.loadImageMedia
 
 class PostViewHolder(
     private val binding: CardPostBinding,

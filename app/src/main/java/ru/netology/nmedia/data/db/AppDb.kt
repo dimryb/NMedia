@@ -1,4 +1,4 @@
-package ru.netology.nmedia.data
+package ru.netology.nmedia.data.db
 
 import android.content.Context
 import androidx.room.Database
