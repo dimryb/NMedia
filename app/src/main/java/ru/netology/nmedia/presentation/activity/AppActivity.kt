@@ -63,6 +63,10 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                     when (menuItem.itemId) {
                         R.id.signIn -> {
                             AppAuth.getInstance().setAuth(5, "x-token")
+                            supportFragmentManager.beginTransaction()
+                                .add(R.id.nav_host_fragment, SignInFragment())
+                                .addToBackStack("SignIn")
+                                .commit()
                             true
                         }
                         R.id.signUp -> {
