@@ -12,6 +12,7 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.domain.dto.Media
 import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.Token
 
 interface PostsApiService {
     @GET("posts")
@@ -46,8 +47,15 @@ interface MediaApi {
     suspend fun uploadPhoto(@Part part: MultipartBody.Part): Response<Media>
 }
 
+interface AuthApi {
+    @FormUrlEncoded
+    @POST("users/authentication")
+    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Response<Token>
+}
+
 object PostsApi {
-    private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
+    private const val BASE_SLOW_URL = "${BuildConfig.BASE_URL}/api/slow/"
+    private const val BASE_URL = "${BuildConfig.BASE_URL}/api/"
 
     private val logging = HttpLoggingInterceptor().apply {
         if (BuildConfig.DEBUG) {
@@ -71,17 +79,27 @@ object PostsApi {
         .addInterceptor(authInterceptor)
         .build()
 
-    private val retrofit = Retrofit.Builder()
+    private val retrofitPosts = Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl(BASE_SLOW_URL)
+        .client(okhttp)
+        .build()
+
+    private val retrofitAuth = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .client(okhttp)
         .build()
 
     val service: PostsApiService by lazy {
-        retrofit.create(PostsApiService::class.java)
+        retrofitPosts.create(PostsApiService::class.java)
     }
 
     val serviceMedia: MediaApi by lazy {
-        retrofit.create(MediaApi::class.java)
+        retrofitPosts.create(MediaApi::class.java)
+    }
+
+    val serviceAuth: AuthApi by lazy {
+        retrofitAuth.create(AuthApi::class.java)
     }
 }

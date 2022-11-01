@@ -20,6 +20,10 @@ import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
+    private val viewModel by viewModels<AuthViewModel>()
+
+    private var currentMenuProvider: MenuProvider? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,11 +48,10 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
         }
 
         checkGoogleApiAvailability()
+        observeViewModel()
+    }
 
-        val viewModel by viewModels<AuthViewModel>()
-
-        var currentMenuProvider: MenuProvider? = null
-
+    private fun observeViewModel() {
         viewModel.data.observe(this) {
             currentMenuProvider?.also(::removeMenuProvider)
             addMenuProvider(object : MenuProvider {
@@ -84,6 +87,10 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
             }.apply {
                 currentMenuProvider = this
             })
+        }
+
+        viewModel.token.observe(this){ token ->
+            println("Token ${token.id} ${token.token}")
         }
     }
 

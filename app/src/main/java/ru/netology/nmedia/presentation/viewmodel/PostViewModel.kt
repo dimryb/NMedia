@@ -13,6 +13,7 @@ import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
@@ -37,18 +38,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val dataAll: LiveData<FeedModel> = dataAuth(repository.data)
     val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
 
-    private fun dataAuth(repositoryData: Flow<List<Post>>) : LiveData<FeedModel> = AppAuth.getInstance().data.map {
-        it?.id ?: 0L
-    }.flatMapLatest { id ->
-        repositoryData
-            .map {
-                FeedModel(
-                    it.map { post ->
-                        post.copy(ownerByMe = post.authorId == id)
-                    }, it.isEmpty()
-                )
-            }
-    }.asLiveData(Dispatchers.Default)
+    private fun dataAuth(repositoryData: Flow<List<Post>>): LiveData<FeedModel> =
+        AppAuth.getInstance().data.map {
+            it?.id ?: 0L
+        }.flatMapLatest { id ->
+            repositoryData
+                .map {
+                    FeedModel(
+                        it.map { post ->
+                            post.copy(ownerByMe = post.authorId == id)
+                        }, it.isEmpty()
+                    )
+                }
+        }.asLiveData(Dispatchers.Default)
 
     val invisibleCount: LiveData<Int> =
         repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
