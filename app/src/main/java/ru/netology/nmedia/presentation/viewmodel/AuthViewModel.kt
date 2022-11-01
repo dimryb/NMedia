@@ -23,6 +23,10 @@ class AuthViewModel : ViewModel() {
     val token: LiveData<Token>
         get() = _token
 
+    private val _loginError = MutableLiveData<Unit>()
+    val loginError: LiveData<Unit>
+        get() = _loginError
+
     private val repository: AuthRepository =
         AuthRepositoryImpl()
 
@@ -32,7 +36,7 @@ class AuthViewModel : ViewModel() {
             try {
                 _token.value = repository.updateUser(login, pass)
             } catch (e: Exception) {
-                TODO("Exception updateUser")
+                _loginError.value = Unit
             }
         }
     }
