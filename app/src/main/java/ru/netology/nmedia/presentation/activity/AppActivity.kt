@@ -65,7 +65,6 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                     when (menuItem.itemId) {
                         R.id.signIn -> {
-                            AppAuth.getInstance().setAuth(5, "x-token")
                             supportFragmentManager.beginTransaction()
                                 .add(R.id.nav_host_fragment, SignInFragment())
                                 .addToBackStack("SignIn")
@@ -73,7 +72,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                             true
                         }
                         R.id.signUp -> {
-                            AppAuth.getInstance().setAuth(5, "x-token")
+                            TODO("Sign Up")
                             true
                         }
                         R.id.logout -> {
@@ -91,6 +90,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
         viewModel.token.observe(this){ token ->
             println("Token ${token.id} ${token.token}")
+            AppAuth.getInstance().setAuth(token.id, token.token ?: "")
         }
     }
 
