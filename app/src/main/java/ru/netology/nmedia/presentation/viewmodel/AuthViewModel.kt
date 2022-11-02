@@ -30,6 +30,14 @@ class AuthViewModel : ViewModel() {
     private val repository: AuthRepository =
         AuthRepositoryImpl()
 
+    private val _signIn = MutableLiveData<Unit>()
+    val signIn: LiveData<Unit>
+        get() = _signIn
+
+    fun signIn(){
+        _signIn.value = Unit
+    }
+
     fun updateUser(login: String, pass: String) {
         println("Sign In: Login: $login, Password: $pass ")
         viewModelScope.launch {

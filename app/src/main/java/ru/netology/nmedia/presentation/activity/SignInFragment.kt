@@ -41,10 +41,6 @@ class SignInFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.token.observe(viewLifecycleOwner) { token ->
-            println("Token ${token.id} ${token.token}")
-            parentFragmentManager.popBackStack()
-        }
         viewModel.loginError.observe(viewLifecycleOwner) {
             Toast.makeText(context, R.string.login_error, Toast.LENGTH_SHORT).show()
         }

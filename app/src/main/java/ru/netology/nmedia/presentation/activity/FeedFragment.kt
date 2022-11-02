@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -29,9 +30,7 @@ class FeedFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
-    private val authViewModel: AuthViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
@@ -133,7 +132,7 @@ class FeedFragment : Fragment() {
             if(authViewModel.authorized) {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             }else{
-                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+                authViewModel.signIn()
             }
         }
         binding.retryButton.setOnClickListener {

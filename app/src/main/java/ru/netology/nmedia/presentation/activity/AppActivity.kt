@@ -65,10 +65,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                     when (menuItem.itemId) {
                         R.id.signIn -> {
-                            supportFragmentManager.beginTransaction()
-                                .add(R.id.nav_host_fragment, SignInFragment())
-                                .addToBackStack("SignIn")
-                                .commit()
+                            viewModel.signIn()
                             true
                         }
                         R.id.signUp -> {
@@ -91,6 +88,15 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
         viewModel.token.observe(this){ token ->
             println("Token ${token.id} ${token.token}")
             AppAuth.getInstance().setAuth(token.id, token.token ?: "")
+            supportFragmentManager.popBackStack()
+        }
+
+        viewModel.signIn.observe(this){
+            println("Sign In")
+            supportFragmentManager.beginTransaction()
+                .add(R.id.nav_host_fragment, SignInFragment())
+                .addToBackStack("SignIn")
+                .commit()
         }
     }
 
