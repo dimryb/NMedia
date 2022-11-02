@@ -16,6 +16,7 @@ import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.adapter.PostAdapter
 import ru.netology.nmedia.presentation.model.FeedModelState
+import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -28,9 +29,17 @@ class FeedFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
+    private val authViewModel: AuthViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
+
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
-            viewModel.like(post)
+            if(authViewModel.authorized) {
+                viewModel.like(post)
+            } else {
+                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+            }
         }
 
         override fun onShare(post: Post) {
@@ -121,7 +130,11 @@ class FeedFragment : Fragment() {
 
     private fun setupListeners() {
         binding.createButton.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if(authViewModel.authorized) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }else{
+                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+            }
         }
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()

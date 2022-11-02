@@ -30,7 +30,7 @@ class PostViewHolder(
 
     private fun setLocalButton(cardPostBinding: CardPostBinding, post: Post){
         with(cardPostBinding) {
-            localButton.visibility = if (post.author == "Student") View.VISIBLE else View.INVISIBLE
+            localButton.visibility = if (post.ownerByMe) View.VISIBLE else View.INVISIBLE
             localButton.setIconResource(
                 if (post.isLocal) R.drawable.ic_local else R.drawable.ic_not_local
             )
