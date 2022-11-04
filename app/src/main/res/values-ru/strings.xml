@@ -34,4 +34,6 @@
     <string name="label_sign_in">Войти</string>
     <string name="login_error">Ошибка аутентификации</string>
     <string name="yes">Да</string>
+    <string name="enter_name">Введите имя</string>
+    <string name="enter_repeat_password">Подтвердите пароль</string>
 </resources>

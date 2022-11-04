@@ -35,4 +35,6 @@
     <string name="label_sign_in">Sign In</string>
     <string name="login_error">Authentication error</string>
     <string name="yes">Yes</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_repeat_password">Repeat password</string>
 </resources>
