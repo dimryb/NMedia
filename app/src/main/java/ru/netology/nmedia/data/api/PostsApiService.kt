@@ -67,7 +67,7 @@ object PostsApi {
         val request = AppAuth.getInstance().data.value?.token?.let {
             chain.request()
                 .newBuilder()
-                .addHeader("Authorisation", it)
+                .addHeader("Authorization", it)
                 .build()
         } ?: chain.request()
 
