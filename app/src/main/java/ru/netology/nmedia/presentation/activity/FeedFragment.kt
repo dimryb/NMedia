@@ -37,7 +37,7 @@ class FeedFragment : Fragment() {
             if(authViewModel.authorized) {
                 viewModel.like(post)
             } else {
-                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+                authViewModel.signIn()
             }
         }
 

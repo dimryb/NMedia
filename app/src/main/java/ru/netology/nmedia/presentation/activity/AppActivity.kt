@@ -12,6 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
@@ -73,7 +74,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                             true
                         }
                         R.id.logout -> {
-                            AppAuth.getInstance().removeAuth()
+                            viewModel.signOutAsk()
                             true
                         }
                         else -> false
@@ -85,13 +86,13 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
             })
         }
 
-        viewModel.token.observe(this){ token ->
+        viewModel.token.observe(this) { token ->
             println("Token ${token.id} ${token.token}")
             AppAuth.getInstance().setAuth(token.id, token.token ?: "")
             supportFragmentManager.popBackStack()
         }
 
-        viewModel.signIn.observe(this){
+        viewModel.signIn.observe(this) {
             println("Sign In")
             supportFragmentManager.beginTransaction()
                 .add(R.id.nav_host_fragment, SignInFragment())

@@ -27,15 +27,35 @@ class AuthViewModel : ViewModel() {
     val loginError: LiveData<Unit>
         get() = _loginError
 
-    private val repository: AuthRepository =
-        AuthRepositoryImpl()
-
     private val _signIn = MutableLiveData<Unit>()
     val signIn: LiveData<Unit>
         get() = _signIn
 
-    fun signIn(){
+    private val _signOutAsk = MutableLiveData<Boolean>()
+    val signOutAsk : LiveData<Boolean>
+        get() = _signOutAsk
+
+    var signOutAskMode = false
+
+    private val repository: AuthRepository =
+        AuthRepositoryImpl()
+
+    fun signIn() {
         _signIn.value = Unit
+    }
+
+    fun signOut() {
+        println("Sign Out")
+        _signOutAsk.value = false
+        AppAuth.getInstance().removeAuth()
+    }
+
+    fun signOutAsk() {
+        if (signOutAskMode) {
+            _signOutAsk.value = true
+        } else {
+            signOut()
+        }
     }
 
     fun updateUser(login: String, pass: String) {
