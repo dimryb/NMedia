@@ -21,4 +21,18 @@ class AuthRepositoryImpl: AuthRepository {
             throw UnknownError
         }
     }
+
+    override suspend fun registerUser(login: String, pass: String, name: String): Token {
+        try {
+            val response = PostsApi.serviceAuth.registerUser(login, pass, name)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
 }

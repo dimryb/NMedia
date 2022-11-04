@@ -70,7 +70,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                             true
                         }
                         R.id.signUp -> {
-                            TODO("Sign Up")
+                            viewModel.signUp()
                             true
                         }
                         R.id.logout -> {
@@ -97,6 +97,14 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.nav_host_fragment, SignInFragment())
                 .addToBackStack("SignIn")
+                .commit()
+        }
+
+        viewModel.signUp.observe(this) {
+            println("Sign Up")
+            supportFragmentManager.beginTransaction()
+                .add(R.id.nav_host_fragment, SignUpFragment())
+                .addToBackStack("SignUp")
                 .commit()
         }
     }

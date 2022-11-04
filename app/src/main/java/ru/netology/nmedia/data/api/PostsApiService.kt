@@ -50,7 +50,18 @@ interface MediaApi {
 interface AuthApi {
     @FormUrlEncoded
     @POST("users/authentication")
-    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Response<Token>
+    suspend fun updateUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String
+    ): Response<Token>
+
+    @FormUrlEncoded
+    @POST("users/registration")
+    suspend fun registerUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+        @Field("name") name: String
+    ): Response<Token>
 }
 
 object PostsApi {
@@ -63,7 +74,7 @@ object PostsApi {
         }
     }
 
-    private val authInterceptor =  Interceptor { chain ->
+    private val authInterceptor = Interceptor { chain ->
         val request = AppAuth.getInstance().data.value?.token?.let {
             chain.request()
                 .newBuilder()

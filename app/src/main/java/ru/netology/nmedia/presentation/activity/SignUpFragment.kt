@@ -9,13 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSignInBinding
+import ru.netology.nmedia.databinding.FragmentSignUpBinding
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 
-class SignInFragment : Fragment() {
+class SignUpFragment : Fragment() {
 
-    private var _binding: FragmentSignInBinding? = null
-    private val binding: FragmentSignInBinding
-        get() = _binding ?: throw RuntimeException("SignInFragment == null")
+    private var _binding: FragmentSignUpBinding? = null
+    private val binding: FragmentSignUpBinding
+        get() = _binding ?: throw RuntimeException("SignUpFragment == null")
 
     private val viewModel: AuthViewModel by activityViewModels()
 
@@ -23,7 +24,7 @@ class SignInFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSignInBinding.inflate(inflater, container, false)
+        _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         setupClickListeners()
         return binding.root
     }
@@ -31,9 +32,11 @@ class SignInFragment : Fragment() {
     private fun setupClickListeners() {
         with(binding) {
             signInButton.setOnClickListener {
-                viewModel.updateUser(
+                viewModel.registerUser(
                     fieldLogin.text.toString(),
-                    fieldPassword.text.toString()
+                    fieldPassword.text.toString(),
+                    fieldRepeatPassword.text.toString(),
+                    fieldName.text.toString()
                 )
             }
         }
@@ -41,8 +44,8 @@ class SignInFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.loginError.observe(viewLifecycleOwner) {
-            Toast.makeText(context, R.string.login_error, Toast.LENGTH_SHORT).show()
+        viewModel.registerError.observe(viewLifecycleOwner) {
+            Toast.makeText(context, R.string.register_error, Toast.LENGTH_SHORT).show()
         }
     }
 

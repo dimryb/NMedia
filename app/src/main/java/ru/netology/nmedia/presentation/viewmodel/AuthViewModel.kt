@@ -27,9 +27,17 @@ class AuthViewModel : ViewModel() {
     val loginError: LiveData<Unit>
         get() = _loginError
 
+    private val _registerError = MutableLiveData<Unit>()
+    val registerError: LiveData<Unit>
+        get() = _registerError
+
     private val _signIn = MutableLiveData<Unit>()
     val signIn: LiveData<Unit>
         get() = _signIn
+
+    private val _signUp = MutableLiveData<Unit>()
+    val signUp: LiveData<Unit>
+        get() = _signUp
 
     private val _signOutAsk = MutableLiveData<Boolean>()
     val signOutAsk : LiveData<Boolean>
@@ -58,6 +66,10 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun signUp() {
+        _signUp.value = Unit
+    }
+
     fun updateUser(login: String, pass: String) {
         println("Sign In: Login: $login, Password: $pass ")
         viewModelScope.launch {
@@ -65,6 +77,21 @@ class AuthViewModel : ViewModel() {
                 _token.value = repository.updateUser(login, pass)
             } catch (e: Exception) {
                 _loginError.value = Unit
+            }
+        }
+    }
+
+    fun registerUser(login: String, pass: String, repeatPass: String, name: String){
+        if(pass != repeatPass){
+            _registerError.value = Unit
+            return
+        }
+        println("Sign Up: Login: $login, Password: $pass, Name: $name")
+        viewModelScope.launch {
+            try {
+                _token.value = repository.registerUser(login, pass, name)
+            } catch (e: Exception) {
+                _registerError.value = Unit
             }
         }
     }
