@@ -84,7 +84,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
-                author = "Student"
             )
             postDao.insert(PostEntity.fromDto(localPost))
             val response = PostsApi.service.save(post)
@@ -111,7 +110,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
-                author = "Student",
                 attachment = Attachment(url = file.id)
             )
             postDao.insert(PostEntity.fromDto(localPost))
