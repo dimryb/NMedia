@@ -12,9 +12,13 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.domain.dto.Media
 import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.PushToken
 import ru.netology.nmedia.domain.dto.Token
 
-interface PostsApiService {
+interface ApiService {
+    @POST("/users/push-token")
+    suspend fun sendPushToken(@Body token: PushToken): Response<Unit>
+
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
 
@@ -102,8 +106,8 @@ object PostsApi {
         .client(okhttp)
         .build()
 
-    val service: PostsApiService by lazy {
-        retrofitPosts.create(PostsApiService::class.java)
+    val service: ApiService by lazy {
+        retrofitPosts.create(ApiService::class.java)
     }
 
     val serviceMedia: MediaApi by lazy {
