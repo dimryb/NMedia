@@ -35,6 +35,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
+        //TODO: вывести нотификацию
         message.data[action]?.let {
             when (it) {
                 Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
