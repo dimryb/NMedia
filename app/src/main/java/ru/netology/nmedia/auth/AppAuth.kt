@@ -2,6 +2,7 @@ package ru.netology.nmedia.auth
 
 import android.content.Context
 import androidx.core.content.edit
+import androidx.work.*
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +13,7 @@ import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.domain.dto.PushToken
 import ru.netology.nmedia.domain.dto.Token
+import ru.netology.nmedia.workers.SendPushTokenWorker
 
 class AppAuth private constructor(context: Context) {
 
@@ -19,6 +21,7 @@ class AppAuth private constructor(context: Context) {
 
     private val _data: MutableStateFlow<Token?> = MutableStateFlow(null)
     val data = _data.asStateFlow()
+    private val workManager: WorkManager = WorkManager.getInstance(context)
 
     init {
         val token = prefs.getString(TOKEN_KEY, null)
@@ -28,7 +31,6 @@ class AppAuth private constructor(context: Context) {
         } else {
             _data.value = Token(id, token)
         }
-        sendPushToken()
     }
 
     @Synchronized
@@ -52,15 +54,15 @@ class AppAuth private constructor(context: Context) {
     }
 
     fun sendPushToken(token: String? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try{
-                val pushToken = PushToken(token ?: FirebaseMessaging.getInstance().token.await())
-                PostsApi.service.sendPushToken(pushToken)
-            }catch (e: Exception){
-                e.printStackTrace()
-                // do nothing
-            }
-        }
+        val data = workDataOf(SendPushTokenWorker.TOKEN_KEY to token)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val request = OneTimeWorkRequestBuilder<SendPushTokenWorker>()
+            .setInputData(data)
+            .setConstraints(constraints)
+            .build()
+        workManager.enqueue(request)
     }
 
     companion object {
