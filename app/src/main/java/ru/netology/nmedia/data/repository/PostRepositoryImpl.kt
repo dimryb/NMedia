@@ -1,9 +1,7 @@
 package ru.netology.nmedia.data.repository
 
-import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
@@ -15,8 +13,8 @@ import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toDto
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Attachment
-import ru.netology.nmedia.domain.Media
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Media
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
@@ -86,7 +84,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
-                author = "Student"
             )
             postDao.insert(PostEntity.fromDto(localPost))
             val response = PostsApi.service.save(post)
@@ -113,7 +110,6 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val localPost = post.copy(
                 id = if (post.id == 0L) getMaxId() + 1 else post.id,
                 isLocal = true,
-                author = "Student",
                 attachment = Attachment(url = file.id)
             )
             postDao.insert(PostEntity.fromDto(localPost))

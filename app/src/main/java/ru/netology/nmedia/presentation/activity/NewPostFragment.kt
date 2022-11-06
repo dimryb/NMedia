@@ -8,11 +8,15 @@ import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 import ru.netology.nmedia.util.AndroidUtils
 
@@ -25,6 +29,8 @@ class NewPostFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
+
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     private val photoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -75,6 +81,16 @@ class NewPostFragment : Fragment() {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        authViewModel.signOutAskMode = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        authViewModel.signOutAskMode = false
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
@@ -109,6 +125,16 @@ class NewPostFragment : Fragment() {
         viewModel.photo.observe(viewLifecycleOwner) {
             binding.photoLayout.isVisible = it != null
             binding.photo.setImageURI(it?.uri)
+        }
+
+        authViewModel.signOutAsk.observe(viewLifecycleOwner) {
+            if (it) {
+                Snackbar.make(binding.root, "Are you sure?", Snackbar.LENGTH_LONG)
+                    .setAction(R.string.yes) {
+                        authViewModel.signOut()
+                        findNavController().navigateUp()
+                    }.show()
+            }
         }
     }
 

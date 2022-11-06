@@ -27,4 +27,15 @@
     <string name="description_take_photo">Take photo</string>
     <string name="description_photo">Photo</string>
     <string name="remove">Remove</string>
+    <string name="logout">Logout</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="enter_login">Enter login</string>
+    <string name="enter_password">Enter password</string>
+    <string name="label_sign_in">Sign In</string>
+    <string name="login_error">Authentication error</string>
+    <string name="yes">Yes</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_repeat_password">Repeat password</string>
+    <string name="register_error">Register error</string>
 </resources>

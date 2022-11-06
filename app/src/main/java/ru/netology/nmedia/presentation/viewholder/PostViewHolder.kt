@@ -1,17 +1,16 @@
 package ru.netology.nmedia.presentation.viewholder
 
 import android.view.View
-import android.widget.ImageView
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.domain.AttachmentType
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
-import ru.netology.nmedia.presentation.view.*
+import ru.netology.nmedia.presentation.view.loadAuthorAvatar
+import ru.netology.nmedia.presentation.view.loadImageMedia
 
 class PostViewHolder(
     private val binding: CardPostBinding,
@@ -31,7 +30,7 @@ class PostViewHolder(
 
     private fun setLocalButton(cardPostBinding: CardPostBinding, post: Post){
         with(cardPostBinding) {
-            localButton.visibility = if (post.author == "Student") View.VISIBLE else View.INVISIBLE
+            localButton.visibility = if (post.ownerByMe) View.VISIBLE else View.INVISIBLE
             localButton.setIconResource(
                 if (post.isLocal) R.drawable.ic_local else R.drawable.ic_not_local
             )
@@ -80,12 +79,14 @@ class PostViewHolder(
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             media.setOnClickListener { onInteractionListener.onMedia(post) }
 
+            menuButton.isVisible = post.ownerByMe
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
             postLayout.setOnClickListener { onInteractionListener.onDetails(post) }
         }
     }
 
     private fun setupPopupMenu(view: View, post: Post) {
+
         PopupMenu(view.context, view).apply {
             inflate(R.menu.options_post)
             setOnMenuItemClickListener { item ->

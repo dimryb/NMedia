@@ -4,19 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
-import ru.netology.nmedia.domain.AttachmentType
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.loadAuthorAvatar
 import ru.netology.nmedia.presentation.view.loadImageMedia
@@ -97,8 +94,8 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel(post: Post) {
-        viewModel.data.observe(viewLifecycleOwner) {
-            viewModel.data.value?.posts?.find { it.id == post.id }?.let {
+        viewModel.dataAll.observe(viewLifecycleOwner) {
+            viewModel.dataAll.value?.posts?.find { it.id == post.id }?.let {
                 setContent(it)
             }
         }
@@ -118,6 +115,7 @@ class DetailsFragment : Fragment() {
                     DetailsFragmentDirections.actionDetailsFragmentToMediaFragment(post)
                 )
             }
+            menuButton.isVisible = post.ownerByMe
             menuButton.setOnClickListener { setupPopupMenu(it, post) }
         }
     }

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.databinding.FragmentMediaBinding
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 

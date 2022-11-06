@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.viewholder.PostViewHolder
 

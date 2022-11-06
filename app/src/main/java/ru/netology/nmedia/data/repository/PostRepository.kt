@@ -1,7 +1,8 @@
 package ru.netology.nmedia.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.domain.Post
+import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.presentation.viewmodel.PhotoModel
 
 interface PostRepository {
