@@ -79,7 +79,7 @@ object PostsApi {
     }
 
     private val authInterceptor = Interceptor { chain ->
-        val request = AppAuth.getInstance().authStateFlow.value?.token?.let { token->
+        val request = AppAuth.getInstance().authStateFlow.value.token?.let { token->
             chain.request()
                 .newBuilder()
                 .addHeader("Authorization", token)

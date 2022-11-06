@@ -7,12 +7,21 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.domain.dto.Push
+import ru.netology.nmedia.domain.dto.PushToken
+import ru.netology.nmedia.workers.SendPushTokenWorker
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
@@ -37,7 +46,10 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         message.data.values.forEach {
-            handlePush(gson.fromJson(it, Push::class.java))
+            checkPush(
+                AppAuth.getInstance().authStateFlow.value.id,
+                gson.fromJson(it, Push::class.java)
+            )
         }
     }
 
@@ -90,8 +102,28 @@ class FCMService : FirebaseMessagingService() {
             .notify(Random.nextInt(100_000), notification)
     }
 
-    private fun handlePush(push: Push){
-        println(push)
-        //AppAuth.getInstance().
+    private fun checkPush(id: Long, push: Push) {
+        if ((push.recipientId == id)||(push.recipientId == null)){
+            handlePush(push)
+        } else if (
+            ((push.recipientId == 0L) && (id != 0L)) ||
+            ((push.recipientId != 0L) && (push.recipientId != id))
+        ) {
+            AppAuth.getInstance().sendPushToken()
+        } else {
+            throw RuntimeException("Unaccounted combination")
+        }
+    }
+
+    private fun handlePush(push: Push) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle(if(push.recipientId == null) "Broadcast" else "To you")
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentText(push.content)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(Random.nextInt(100_000), notification)
     }
 }
