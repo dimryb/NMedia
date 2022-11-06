@@ -7,10 +7,12 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.data.api.PostsApi
+import ru.netology.nmedia.domain.dto.AuthState
 import ru.netology.nmedia.domain.dto.PushToken
 import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.workers.SendPushTokenWorker
@@ -19,23 +21,30 @@ class AppAuth private constructor(context: Context) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
-    private val _data: MutableStateFlow<Token?> = MutableStateFlow(null)
-    val data = _data.asStateFlow()
+    private val _authStateFlow: MutableStateFlow<AuthState>
+
     private val workManager: WorkManager = WorkManager.getInstance(context)
 
     init {
         val token = prefs.getString(TOKEN_KEY, null)
         val id = prefs.getLong(ID_KEY, 0L)
+
         if (token == null || id == 0L) {
-            removeAuth()
+            _authStateFlow = MutableStateFlow(AuthState())
+            with(prefs.edit()) {
+                clear()
+                apply()
+            }
         } else {
-            _data.value = Token(id, token)
+            _authStateFlow = MutableStateFlow(AuthState(id, token))
         }
     }
 
+    val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
+
     @Synchronized
     fun removeAuth() {
-        _data.value = null
+        _authStateFlow.value = AuthState()
         prefs.edit {
             remove(TOKEN_KEY)
             remove(ID_KEY)
@@ -45,7 +54,7 @@ class AppAuth private constructor(context: Context) {
 
     @Synchronized
     fun setAuth(id: Long, token: String) {
-        _data.value = Token(id, token)
+        _authStateFlow.value = AuthState(id, token)
         prefs.edit {
             putString(TOKEN_KEY, token)
             putLong(ID_KEY, id)
@@ -70,12 +79,18 @@ class AppAuth private constructor(context: Context) {
         private const val TOKEN_KEY = "TOKEN_KEY"
 
         @Volatile
-        private var INSTANCE: AppAuth? = null
+        private var instance: AppAuth? = null
 
-        fun getInstance(): AppAuth = requireNotNull(INSTANCE)
-
-        fun initAuth(context: Context) {
-            INSTANCE = AppAuth(context)
+        fun getInstance(): AppAuth = synchronized(this) {
+            instance ?: throw IllegalStateException(
+                "AppAuth is not initialized, you must call AppAuth.initializeApp(Context context) first."
+            )
         }
+
+        fun initApp(context: Context): AppAuth = instance ?: synchronized(this) {
+            instance ?: buildAuth(context).also { instance = it }
+        }
+
+        private fun buildAuth(context: Context): AppAuth = AppAuth(context)
     }
 }

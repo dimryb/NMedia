@@ -12,6 +12,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.domain.dto.Push
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
@@ -35,18 +36,8 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        //TODO: вывести нотификацию
-        message.data[action]?.let {
-            when (it) {
-                Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
-                Action.NEW_POST -> handleNewPost(
-                    gson.fromJson(
-                        message.data[content],
-                        NewPost::class.java
-                    )
-                )
-                else -> Log.d("FCMService", "Неизвестный тип сообщения")
-            }
+        message.data.values.forEach {
+            handlePush(gson.fromJson(it, Push::class.java))
         }
     }
 
@@ -97,5 +88,10 @@ class FCMService : FirebaseMessagingService() {
 
         NotificationManagerCompat.from(this)
             .notify(Random.nextInt(100_000), notification)
+    }
+
+    private fun handlePush(push: Push){
+        println(push)
+        //AppAuth.getInstance().
     }
 }

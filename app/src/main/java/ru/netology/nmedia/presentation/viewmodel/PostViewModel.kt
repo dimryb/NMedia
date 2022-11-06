@@ -39,14 +39,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
 
     private fun dataAuth(repositoryData: Flow<List<Post>>): LiveData<FeedModel> =
-        AppAuth.getInstance().data.map {
-            it?.id ?: 0L
-        }.flatMapLatest { id ->
+        AppAuth.getInstance()
+            .authStateFlow
+            .flatMapLatest { (myId, _) ->
             repositoryData
                 .map {
                     FeedModel(
                         it.map { post ->
-                            post.copy(ownerByMe = post.authorId == id)
+                            post.copy(ownerByMe = post.authorId == myId)
                         }, it.isEmpty()
                     )
                 }

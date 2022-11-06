@@ -9,15 +9,18 @@ import ru.netology.nmedia.data.repository.AuthRepository
 import ru.netology.nmedia.data.repository.AuthRepositoryImpl
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
+import ru.netology.nmedia.domain.dto.AuthState
 import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.presentation.model.FeedModelState
 
 class AuthViewModel : ViewModel() {
 
-    val data: LiveData<Token?> = AppAuth.getInstance().data.asLiveData(Dispatchers.Default)
+    val data: LiveData<AuthState> = AppAuth.getInstance()
+        .authStateFlow
+        .asLiveData(Dispatchers.Default)
 
     val authorized: Boolean
-        get() = AppAuth.getInstance().data.value?.token != null
+        get() = AppAuth.getInstance().authStateFlow.value?.token != null
 
     private val _token = MutableLiveData<Token>()
     val token: LiveData<Token>
