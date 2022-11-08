@@ -1,15 +1,8 @@
 package ru.netology.nmedia.data.api
 
-import okhttp3.Interceptor
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import ru.netology.nmedia.BuildConfig
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.domain.dto.Media
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.domain.dto.PushToken
@@ -66,55 +59,4 @@ interface AuthApi {
         @Field("pass") pass: String,
         @Field("name") name: String
     ): Response<Token>
-}
-
-object PostsApi {
-    private const val BASE_SLOW_URL = "${BuildConfig.BASE_URL}/api/slow/"
-    private const val BASE_URL = "${BuildConfig.BASE_URL}/api/"
-
-    private val logging = HttpLoggingInterceptor().apply {
-        if (BuildConfig.DEBUG) {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-    }
-
-    private val authInterceptor = Interceptor { chain ->
-        val request = AppAuth.getInstance().authStateFlow.value.token?.let { token->
-            chain.request()
-                .newBuilder()
-                .addHeader("Authorization", token)
-                .build()
-        } ?: chain.request()
-
-        chain.proceed(request)
-    }
-
-    private val okhttp = OkHttpClient.Builder()
-        .addInterceptor(logging)
-        .addInterceptor(authInterceptor)
-        .build()
-
-    private val retrofitPosts = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BASE_SLOW_URL)
-        .client(okhttp)
-        .build()
-
-    private val retrofitAuth = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BASE_URL)
-        .client(okhttp)
-        .build()
-
-    val service: ApiService by lazy {
-        retrofitPosts.create(ApiService::class.java)
-    }
-
-    val serviceMedia: MediaApi by lazy {
-        retrofitPosts.create(MediaApi::class.java)
-    }
-
-    val serviceAuth: AuthApi by lazy {
-        retrofitAuth.create(AuthApi::class.java)
-    }
 }

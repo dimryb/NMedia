@@ -3,21 +3,16 @@ package ru.netology.nmedia.auth
 import android.content.Context
 import androidx.core.content.edit
 import androidx.work.*
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.data.api.PostsApi
 import ru.netology.nmedia.domain.dto.AuthState
-import ru.netology.nmedia.domain.dto.PushToken
-import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.workers.SendPushTokenWorker
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(context: Context) {
+@Singleton
+class AppAuth @Inject constructor(context: Context) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
