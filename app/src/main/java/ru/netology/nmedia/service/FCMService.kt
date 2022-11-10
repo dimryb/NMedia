@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.domain.dto.Push
+import javax.inject.Inject
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
@@ -19,6 +20,9 @@ class FCMService : FirebaseMessagingService() {
     private val content = "content"
     private val channelId = "remote"
     private val gson = Gson()
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     override fun onCreate() {
         super.onCreate()
@@ -37,14 +41,14 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         message.data.values.forEach {
             checkPush(
-                AppAuth.getInstance().authStateFlow.value.id,
+                appAuth.authStateFlow.value.id,
                 gson.fromJson(it, Push::class.java)
             )
         }
     }
 
     override fun onNewToken(token: String) {
-        AppAuth.getInstance().sendPushToken(token)
+        appAuth.sendPushToken(token)
     }
 
     private fun handleLike(content: Like) {
@@ -93,13 +97,13 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun checkPush(id: Long, push: Push) {
-        if ((push.recipientId == id)||(push.recipientId == null)){
+        if ((push.recipientId == id) || (push.recipientId == null)) {
             handlePush(push)
         } else if (
             ((push.recipientId == 0L) && (id != 0L)) ||
             ((push.recipientId != 0L) && (push.recipientId != id))
         ) {
-            AppAuth.getInstance().sendPushToken()
+            appAuth.sendPushToken()
         } else {
             throw RuntimeException("Unaccounted combination")
         }
@@ -107,7 +111,7 @@ class FCMService : FirebaseMessagingService() {
 
     private fun handlePush(push: Push) {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(if(push.recipientId == null) "Broadcast" else "To you")
+            .setContentTitle(if (push.recipientId == null) "Broadcast" else "To you")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentText(push.content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

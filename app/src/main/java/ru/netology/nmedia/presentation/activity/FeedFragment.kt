@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -20,6 +21,7 @@ import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
@@ -89,7 +91,7 @@ class FeedFragment : Fragment() {
 
     private fun observeViewModel() {
         binding.postsList.adapter = adapter
-        viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
+        viewModel.data.observe(viewLifecycleOwner) { state ->
             val newPost = state.posts.size > adapter.currentList.size
             adapter.submitList(state.posts) {
                 if (newPost) {
@@ -115,10 +117,6 @@ class FeedFragment : Fragment() {
                 return@observe
             }
             launchEditPost()
-        }
-
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            //println("Newer count: $it")
         }
 
         viewModel.invisibleCount.observe(viewLifecycleOwner) {

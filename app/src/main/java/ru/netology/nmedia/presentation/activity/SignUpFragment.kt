@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.FragmentSignInBinding
 import ru.netology.nmedia.databinding.FragmentSignUpBinding
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 

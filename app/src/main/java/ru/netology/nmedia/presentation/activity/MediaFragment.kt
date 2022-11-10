@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.databinding.FragmentMediaBinding
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class MediaFragment : Fragment() {
 
     private val args by navArgs<MediaFragmentArgs>()

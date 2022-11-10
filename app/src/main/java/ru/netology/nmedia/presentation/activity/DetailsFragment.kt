@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.dto.Post
@@ -19,6 +20,7 @@ import ru.netology.nmedia.presentation.view.loadAuthorAvatar
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
 
@@ -94,8 +96,8 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel(post: Post) {
-        viewModel.dataAll.observe(viewLifecycleOwner) {
-            viewModel.dataAll.value?.posts?.find { it.id == post.id }?.let {
+        viewModel.data.observe(viewLifecycleOwner) {
+            viewModel.data.value?.posts?.find { it.id == post.id }?.let {
                 setContent(it)
             }
         }

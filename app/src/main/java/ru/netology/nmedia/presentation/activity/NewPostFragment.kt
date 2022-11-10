@@ -13,13 +13,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 import ru.netology.nmedia.util.AndroidUtils
 
+@AndroidEntryPoint
 class NewPostFragment : Fragment() {
 
     private var _binding: FragmentNewPostBinding? = null
@@ -101,14 +102,14 @@ class NewPostFragment : Fragment() {
             ImagePicker.Builder(this)
                 .cameraOnly()
                 .maxResultSize(2048, 2048)
-                .createIntent (photoLauncher::launch)
+                .createIntent(photoLauncher::launch)
         }
 
         binding.pickPhoto.setOnClickListener {
             ImagePicker.Builder(this)
                 .galleryOnly()
                 .maxResultSize(2048, 2048)
-                .createIntent (photoLauncher::launch)
+                .createIntent(photoLauncher::launch)
         }
 
         binding.removePhoto.setOnClickListener {

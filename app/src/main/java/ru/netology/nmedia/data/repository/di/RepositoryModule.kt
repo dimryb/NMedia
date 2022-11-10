@@ -14,11 +14,11 @@ import javax.inject.Singleton
 @Module
 interface RepositoryModule {
 
-    @Singleton
     @Binds
+    @Singleton
     fun bindsPostRepository(impl: PostRepositoryImpl): PostRepository
 
-    @Singleton
     @Binds
+    @Singleton
     fun bindsAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 }
