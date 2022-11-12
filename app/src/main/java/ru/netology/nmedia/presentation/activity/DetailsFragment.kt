@@ -12,15 +12,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.loadAuthorAvatar
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
+import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
+
+    private val dependencyContainer = DependencyContainer.getInstance()
 
     private val formatter: CounterFormatter by lazy {
         CounterFormatter()
@@ -30,8 +34,16 @@ class DetailsFragment : Fragment() {
     private val binding: FragmentDetailsBinding
         get() = _binding ?: throw RuntimeException("FragmentDetailsBinding == null")
 
+
     private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(
+                dependencyContainer.postRepository,
+                dependencyContainer.authRepository,
+                dependencyContainer.appAuth
+            )
+        }
     )
 
     override fun onCreateView(
@@ -81,11 +93,6 @@ class DetailsFragment : Fragment() {
                         media.visibility = View.VISIBLE
                         mediaImageView.loadImageMedia(post.attachment.url)
                     }
-                    else -> {
-                        mediaImageView.setImageResource(R.mipmap.media)
-                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                        media.visibility = View.VISIBLE
-                    }
                 }
             }
 
@@ -107,7 +114,7 @@ class DetailsFragment : Fragment() {
                 viewModel.like(post)
             }
             shareButton.setOnClickListener {
-                viewModel.share(post.id)
+//                viewModel.share(post.id)
             }
             media.setOnClickListener {
                 //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))

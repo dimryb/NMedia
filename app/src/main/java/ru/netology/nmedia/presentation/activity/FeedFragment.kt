@@ -13,22 +13,33 @@ import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.adapter.PostAdapter
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
+import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
 class FeedFragment : Fragment() {
+
+    private val dependencyContainer = DependencyContainer.getInstance()
+
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(
+                dependencyContainer.postRepository,
+                dependencyContainer.authRepository,
+                dependencyContainer.appAuth
+            )
+        }
+    )
 
     private var _binding: FragmentFeedBinding? = null
     private val binding: FragmentFeedBinding
         get() = _binding ?: throw RuntimeException("FragmentFeedBinding == null!")
-
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
 
     private val authViewModel: AuthViewModel by activityViewModels()
 
@@ -42,7 +53,7 @@ class FeedFragment : Fragment() {
         }
 
         override fun onShare(post: Post) {
-            viewModel.share(post.id)
+//            viewModel.share(post.id)
         }
 
         override fun onEdit(post: Post) {

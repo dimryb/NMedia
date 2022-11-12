@@ -14,20 +14,30 @@ import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
+import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 import ru.netology.nmedia.util.AndroidUtils
 
 class NewPostFragment : Fragment() {
+
+    private val dependencyContainer = DependencyContainer.getInstance()
 
     private var _binding: FragmentNewPostBinding? = null
     private val binding: FragmentNewPostBinding
         get() = _binding ?: throw RuntimeException("FragmentNewPostBinding == null")
 
     private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(
+                dependencyContainer.postRepository,
+                dependencyContainer.authRepository,
+                dependencyContainer.appAuth
+            )
+        }
     )
 
     private val authViewModel: AuthViewModel by activityViewModels()
@@ -101,14 +111,14 @@ class NewPostFragment : Fragment() {
             ImagePicker.Builder(this)
                 .cameraOnly()
                 .maxResultSize(2048, 2048)
-                .createIntent (photoLauncher::launch)
+                .createIntent(photoLauncher::launch)
         }
 
         binding.pickPhoto.setOnClickListener {
             ImagePicker.Builder(this)
                 .galleryOnly()
                 .maxResultSize(2048, 2048)
-                .createIntent (photoLauncher::launch)
+                .createIntent(photoLauncher::launch)
         }
 
         binding.removePhoto.setOnClickListener {

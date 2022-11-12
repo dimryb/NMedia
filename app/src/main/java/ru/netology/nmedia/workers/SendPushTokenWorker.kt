@@ -5,7 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.data.api.PostsApi
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.PushToken
 
 class SendPushTokenWorker(
@@ -18,7 +18,7 @@ class SendPushTokenWorker(
             val pushToken = PushToken(
                 inputData.getString(TOKEN_KEY) ?: FirebaseMessaging.getInstance().token.await()
             )
-            PostsApi.service.sendPushToken(pushToken)
+            DependencyContainer.getInstance().apiService.sendPushToken(pushToken)
             Result.success()
         } catch (e: Exception) {
             Result.retry()

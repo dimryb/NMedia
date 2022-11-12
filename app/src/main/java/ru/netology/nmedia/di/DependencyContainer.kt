@@ -12,6 +12,8 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.data.api.ApiService
 import ru.netology.nmedia.data.db.AppDb
+import ru.netology.nmedia.data.repository.AuthRepository
+import ru.netology.nmedia.data.repository.AuthRepositoryImpl
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
 
@@ -82,8 +84,12 @@ class DependencyContainer(
 
     private val postDao = appDb.postDao()
 
-    val repository: PostRepository = PostRepositoryImpl(
+    val postRepository: PostRepository = PostRepositoryImpl(
         postDao,
+        apiService
+    )
+
+    val authRepository: AuthRepository = AuthRepositoryImpl(
         apiService
     )
 }

@@ -12,16 +12,26 @@ import androidx.core.view.MenuProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
-import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
+import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
-    private val viewModel by viewModels<AuthViewModel>()
+    private val dependencyContainer = DependencyContainer.getInstance()
+
+    private val viewModel: AuthViewModel by viewModels(
+        factoryProducer = {
+            ViewModelFactory(
+                dependencyContainer.postRepository,
+                dependencyContainer.authRepository,
+                dependencyContainer.appAuth
+            )
+        }
+    )
 
     private var currentMenuProvider: MenuProvider? = null
 
@@ -88,7 +98,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
         viewModel.token.observe(this) { token ->
             println("Token ${token.id} ${token.token}")
-            AppAuth.getInstance().setAuth(token.id, token.token ?: "")
+            dependencyContainer.appAuth.setAuth(token.id, token.token ?: "")
             supportFragmentManager.popBackStack()
         }
 

@@ -4,24 +4,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.data.api.PostsApi
+import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.Push
-import ru.netology.nmedia.domain.dto.PushToken
-import ru.netology.nmedia.workers.SendPushTokenWorker
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
@@ -47,14 +38,14 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         message.data.values.forEach {
             checkPush(
-                AppAuth.getInstance().authStateFlow.value.id,
+                DependencyContainer.getInstance().appAuth.authStateFlow.value.id,
                 gson.fromJson(it, Push::class.java)
             )
         }
     }
 
     override fun onNewToken(token: String) {
-        AppAuth.getInstance().sendPushToken(token)
+        DependencyContainer.getInstance().appAuth.sendPushToken(token)
     }
 
     private fun handleLike(content: Like) {
@@ -103,13 +94,13 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun checkPush(id: Long, push: Push) {
-        if ((push.recipientId == id)||(push.recipientId == null)){
+        if ((push.recipientId == id) || (push.recipientId == null)) {
             handlePush(push)
         } else if (
             ((push.recipientId == 0L) && (id != 0L)) ||
             ((push.recipientId != 0L) && (push.recipientId != id))
         ) {
-            AppAuth.getInstance().sendPushToken()
+            DependencyContainer.getInstance().appAuth.sendPushToken()
         } else {
             throw RuntimeException("Unaccounted combination")
         }
@@ -117,7 +108,7 @@ class FCMService : FirebaseMessagingService() {
 
     private fun handlePush(push: Push) {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(if(push.recipientId == null) "Broadcast" else "To you")
+            .setContentTitle(if (push.recipientId == null) "Broadcast" else "To you")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentText(push.content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
