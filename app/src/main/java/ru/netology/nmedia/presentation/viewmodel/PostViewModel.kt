@@ -2,6 +2,7 @@ package ru.netology.nmedia.presentation.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import javax.inject.Inject
 
 private val empty = Post(
     id = 0,
@@ -27,7 +29,8 @@ private val empty = Post(
     published = ""
 )
 
-class PostViewModel(
+@HiltViewModel
+class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     private val appAuth: AppAuth,
 ) : ViewModel() {
@@ -145,9 +148,9 @@ class PostViewModel(
                 _postCreated.value = Unit
                 try {
                     _photo.value?.let { photoModel ->
-                        repository.saveWithAttachment(post, photoModel)
+//                        repository.saveWithAttachment(post, photoModel)
                     } ?: run {
-                        repository.save(post)
+//                        repository.save(post)
                     }
                     _state.value = FeedModelState.Idle
                 } catch (e: Exception) {

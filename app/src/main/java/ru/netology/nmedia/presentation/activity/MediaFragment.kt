@@ -7,16 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.databinding.FragmentMediaBinding
-import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
-import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
+@AndroidEntryPoint
 class MediaFragment : Fragment() {
-
-    private val dependencyContainer = DependencyContainer.getInstance()
 
     private val args by navArgs<MediaFragmentArgs>()
 
@@ -26,13 +24,6 @@ class MediaFragment : Fragment() {
 
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
-        factoryProducer = {
-            ViewModelFactory(
-                dependencyContainer.postRepository,
-                dependencyContainer.authRepository,
-                dependencyContainer.appAuth
-            )
-        }
     )
 
     override fun onCreateView(

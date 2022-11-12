@@ -6,8 +6,9 @@ import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import javax.inject.Inject
 
-class AuthRepositoryImpl(
+class AuthRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
 ): AuthRepository {
     override suspend fun authUser(login: String, pass: String): Token {

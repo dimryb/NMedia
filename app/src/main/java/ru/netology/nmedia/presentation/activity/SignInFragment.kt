@@ -7,29 +7,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSignInBinding
-import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
-import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
+@AndroidEntryPoint
 class SignInFragment : Fragment() {
-
-    private val dependencyContainer = DependencyContainer.getInstance()
 
     private var _binding: FragmentSignInBinding? = null
     private val binding: FragmentSignInBinding
         get() = _binding ?: throw RuntimeException("SignInFragment == null")
 
-    private val viewModel: AuthViewModel by activityViewModels(
-        factoryProducer = {
-            ViewModelFactory(
-                dependencyContainer.postRepository,
-                dependencyContainer.authRepository,
-                dependencyContainer.appAuth
-            )
-        }
-    )
+    private val viewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

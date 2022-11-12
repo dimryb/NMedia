@@ -13,25 +13,20 @@ import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-import ru.netology.nmedia.di.DependencyContainer
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
-import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
-    private val dependencyContainer = DependencyContainer.getInstance()
+    @Inject
+    lateinit var appAuth: AppAuth
 
-    private val viewModel: AuthViewModel by viewModels(
-        factoryProducer = {
-            ViewModelFactory(
-                dependencyContainer.postRepository,
-                dependencyContainer.authRepository,
-                dependencyContainer.appAuth
-            )
-        }
-    )
+    private val viewModel: AuthViewModel by viewModels()
 
     private var currentMenuProvider: MenuProvider? = null
 
@@ -98,7 +93,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
         viewModel.token.observe(this) { token ->
             println("Token ${token.id} ${token.token}")
-            dependencyContainer.appAuth.setAuth(token.id, token.token ?: "")
+            appAuth.setAuth(token.id, token.token ?: "")
             supportFragmentManager.popBackStack()
         }
 

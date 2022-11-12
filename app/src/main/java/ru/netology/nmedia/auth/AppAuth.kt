@@ -3,6 +3,7 @@ package ru.netology.nmedia.auth
 import android.content.Context
 import androidx.core.content.edit
 import androidx.work.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AppAuth @Inject constructor(context: Context) {
+class AppAuth @Inject constructor(
+    @ApplicationContext
+    context: Context
+) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 

@@ -1,14 +1,17 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.data.repository.AuthRepository
 import ru.netology.nmedia.domain.dto.AuthState
 import ru.netology.nmedia.domain.dto.Token
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val repository: AuthRepository,
     private val appAuth: AppAuth,
 ) : ViewModel() {

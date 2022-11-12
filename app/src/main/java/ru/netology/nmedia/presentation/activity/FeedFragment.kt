@@ -10,31 +10,22 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentFeedBinding
-import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.domain.dto.Post
-import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
+import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.presentation.adapter.PostAdapter
 import ru.netology.nmedia.presentation.model.FeedModelState
+import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
-import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
-
-    private val dependencyContainer = DependencyContainer.getInstance()
 
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
-        factoryProducer = {
-            ViewModelFactory(
-                dependencyContainer.postRepository,
-                dependencyContainer.authRepository,
-                dependencyContainer.appAuth
-            )
-        }
     )
 
     private var _binding: FragmentFeedBinding? = null
@@ -45,7 +36,7 @@ class FeedFragment : Fragment() {
 
     private val adapter = PostAdapter(object : OnInteractionListener {
         override fun onLike(post: Post) {
-            if(authViewModel.authorized) {
+            if (authViewModel.authorized) {
                 viewModel.like(post)
             } else {
                 authViewModel.signIn()
@@ -99,6 +90,8 @@ class FeedFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        viewModel.refresh()
+
         binding.postsList.adapter = adapter
         viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
             val newPost = state.posts.size > adapter.currentList.size
@@ -140,9 +133,9 @@ class FeedFragment : Fragment() {
 
     private fun setupListeners() {
         binding.createButton.setOnClickListener {
-            if(authViewModel.authorized) {
+            if (authViewModel.authorized) {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-            }else{
+            } else {
                 authViewModel.signIn()
             }
         }

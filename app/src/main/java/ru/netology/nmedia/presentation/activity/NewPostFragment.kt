@@ -13,17 +13,15 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
-import ru.netology.nmedia.di.DependencyContainer
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
-import ru.netology.nmedia.presentation.viewmodel.ViewModelFactory
 import ru.netology.nmedia.util.AndroidUtils
 
+@AndroidEntryPoint
 class NewPostFragment : Fragment() {
-
-    private val dependencyContainer = DependencyContainer.getInstance()
 
     private var _binding: FragmentNewPostBinding? = null
     private val binding: FragmentNewPostBinding
@@ -31,13 +29,6 @@ class NewPostFragment : Fragment() {
 
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
-        factoryProducer = {
-            ViewModelFactory(
-                dependencyContainer.postRepository,
-                dependencyContainer.authRepository,
-                dependencyContainer.appAuth
-            )
-        }
     )
 
     private val authViewModel: AuthViewModel by activityViewModels()
