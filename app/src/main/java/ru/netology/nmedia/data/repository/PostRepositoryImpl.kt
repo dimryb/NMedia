@@ -181,7 +181,7 @@ class PostRepositoryImpl(
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(PostEntity.fromDto(body))
+            postDao.insert(PostEntity.fromDto(body.copy(visible = true)))
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
