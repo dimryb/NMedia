@@ -148,9 +148,9 @@ class PostViewModel @Inject constructor(
                 _postCreated.value = Unit
                 try {
                     _photo.value?.let { photoModel ->
-//                        repository.saveWithAttachment(post, photoModel)
+                        repository.saveWithAttachment(post, photoModel)
                     } ?: run {
-//                        repository.save(post)
+                        repository.save(post)
                     }
                     _state.value = FeedModelState.Idle
                 } catch (e: Exception) {
