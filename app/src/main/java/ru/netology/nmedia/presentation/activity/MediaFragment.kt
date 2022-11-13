@@ -22,10 +22,6 @@ class MediaFragment : Fragment() {
     private val binding: FragmentMediaBinding
         get() = _binding ?: throw RuntimeException("FragmentMediaBinding == null")
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment,
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

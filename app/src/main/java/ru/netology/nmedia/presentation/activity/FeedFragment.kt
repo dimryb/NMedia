@@ -24,9 +24,7 @@ import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment,
-    )
+    private val viewModel: PostViewModel by activityViewModels()
 
     private var _binding: FragmentFeedBinding? = null
     private val binding: FragmentFeedBinding

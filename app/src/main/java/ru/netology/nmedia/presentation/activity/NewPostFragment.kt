@@ -27,10 +27,7 @@ class NewPostFragment : Fragment() {
     private val binding: FragmentNewPostBinding
         get() = _binding ?: throw RuntimeException("FragmentNewPostBinding == null")
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment,
-    )
-
+    private val viewModel: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
     private val photoLauncher =
