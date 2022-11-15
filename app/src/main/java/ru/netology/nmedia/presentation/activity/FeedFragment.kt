@@ -8,9 +8,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.domain.dto.Post
@@ -91,14 +93,20 @@ class FeedFragment : Fragment() {
         viewModel.refresh()
 
         binding.postsList.adapter = adapter
-        viewModel.dataVisible.observe(viewLifecycleOwner) { state ->
-            val newPost = state.posts.size > adapter.currentList.size
-            adapter.submitList(state.posts) {
-                if (newPost) {
-                    binding.postsList.scrollToPosition(0)
-                }
+//        viewModel.data.observe(viewLifecycleOwner) { state ->
+//            val newPost = state.posts.size > adapter.currentList.size
+//            adapter.submitList(state.posts) {
+//                if (newPost) {
+//                    binding.postsList.scrollToPosition(0)
+//                }
+//            }
+//            binding.emptyText.isVisible = state.empty
+//        }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
             }
-            binding.emptyText.isVisible = state.empty
         }
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
@@ -119,14 +127,14 @@ class FeedFragment : Fragment() {
             launchEditPost()
         }
 
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            //println("Newer count: $it")
-        }
+//        viewModel.newerCount.observe(viewLifecycleOwner) {
+//            //println("Newer count: $it")
+//        }
 
-        viewModel.invisibleCount.observe(viewLifecycleOwner) {
-            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
-            println("Invisible count: $it")
-        }
+//        viewModel.invisibleCount.observe(viewLifecycleOwner) {
+//            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
+//            println("Invisible count: $it")
+//        }
     }
 
     private fun setupListeners() {
