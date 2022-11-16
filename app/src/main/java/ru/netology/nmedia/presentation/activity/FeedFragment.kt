@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -150,10 +151,18 @@ class FeedFragment : Fragment() {
         }
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
-            binding.swipeRefresh.isRefreshing = false
+            //binding.swipeRefresh.isRefreshing = false
         }
         binding.newPostsButton.setOnClickListener {
             viewModel.showNewPosts()
+        }
+
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest {
+                binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
+                        || it.append is LoadState.Loading
+                        || it.prepend is LoadState.Loading
+            }
         }
     }
 
