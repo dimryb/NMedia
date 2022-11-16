@@ -1,26 +1,27 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.repository.AuthRepository
-import ru.netology.nmedia.data.repository.AuthRepositoryImpl
-import ru.netology.nmedia.data.repository.PostRepository
-import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.domain.dto.AuthState
 import ru.netology.nmedia.domain.dto.Token
-import ru.netology.nmedia.presentation.model.FeedModelState
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val repository: AuthRepository,
+    private val appAuth: AppAuth,
+) : ViewModel() {
 
-    val data: LiveData<AuthState> = AppAuth.getInstance()
+    val data: LiveData<AuthState> = appAuth
         .authStateFlow
         .asLiveData(Dispatchers.Default)
 
     val authorized: Boolean
-        get() = AppAuth.getInstance().authStateFlow.value?.token != null
+        get() = appAuth.authStateFlow.value.token != null
 
     private val _token = MutableLiveData<Token>()
     val token: LiveData<Token>
@@ -43,13 +44,10 @@ class AuthViewModel : ViewModel() {
         get() = _signUp
 
     private val _signOutAsk = MutableLiveData<Boolean>()
-    val signOutAsk : LiveData<Boolean>
+    val signOutAsk: LiveData<Boolean>
         get() = _signOutAsk
 
     var signOutAskMode = false
-
-    private val repository: AuthRepository =
-        AuthRepositoryImpl()
 
     fun signIn() {
         _signIn.value = Unit
@@ -58,7 +56,7 @@ class AuthViewModel : ViewModel() {
     fun signOut() {
         println("Sign Out")
         _signOutAsk.value = false
-        AppAuth.getInstance().removeAuth()
+        appAuth.removeAuth()
     }
 
     fun signOutAsk() {
@@ -77,15 +75,15 @@ class AuthViewModel : ViewModel() {
         println("Sign In: Login: $login, Password: $pass ")
         viewModelScope.launch {
             try {
-                _token.value = repository.updateUser(login, pass)
+                _token.value = repository.authUser(login, pass)
             } catch (e: Exception) {
                 _loginError.value = Unit
             }
         }
     }
 
-    fun registerUser(login: String, pass: String, repeatPass: String, name: String){
-        if(pass != repeatPass){
+    fun registerUser(login: String, pass: String, repeatPass: String, name: String) {
+        if (pass != repeatPass) {
             _registerError.value = Unit
             return
         }

@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentDetailsBinding
 import ru.netology.nmedia.domain.dto.Post
@@ -19,6 +21,7 @@ import ru.netology.nmedia.presentation.view.loadAuthorAvatar
 import ru.netology.nmedia.presentation.view.loadImageMedia
 import ru.netology.nmedia.presentation.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class DetailsFragment : Fragment() {
     private val args by navArgs<DetailsFragmentArgs>()
 
@@ -30,9 +33,8 @@ class DetailsFragment : Fragment() {
     private val binding: FragmentDetailsBinding
         get() = _binding ?: throw RuntimeException("FragmentDetailsBinding == null")
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+
+    private val viewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +51,7 @@ class DetailsFragment : Fragment() {
         observeViewModel(args.post)
     }
 
-    private fun setLocalButton(fragmentDetailsBinding: FragmentDetailsBinding, post: Post){
+    private fun setLocalButton(fragmentDetailsBinding: FragmentDetailsBinding, post: Post) {
         with(fragmentDetailsBinding) {
             localButton.visibility = if (post.author == "Student") View.VISIBLE else View.INVISIBLE
             localButton.setIconResource(
@@ -81,11 +83,6 @@ class DetailsFragment : Fragment() {
                         media.visibility = View.VISIBLE
                         mediaImageView.loadImageMedia(post.attachment.url)
                     }
-                    else -> {
-                        mediaImageView.setImageResource(R.mipmap.media)
-                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                        media.visibility = View.VISIBLE
-                    }
                 }
             }
 
@@ -94,11 +91,11 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel(post: Post) {
-        viewModel.dataAll.observe(viewLifecycleOwner) {
-            viewModel.dataAll.value?.posts?.find { it.id == post.id }?.let {
-                setContent(it)
-            }
-        }
+//        viewModel.dataAll.observe(viewLifecycleOwner) {
+//            viewModel.dataAll.value?.posts?.find { it.id == post.id }?.let {
+//                setContent(it)
+//            }
+//        }
     }
 
     private fun setupClickListeners(post: Post) {
@@ -107,7 +104,7 @@ class DetailsFragment : Fragment() {
                 viewModel.like(post)
             }
             shareButton.setOnClickListener {
-                viewModel.share(post.id)
+//                viewModel.share(post.id)
             }
             media.setOnClickListener {
                 //startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
-import ru.netology.nmedia.data.api.PostsApi
+import ru.netology.nmedia.data.api.ApiService
 import ru.netology.nmedia.data.dao.PostDao
 import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toDto
@@ -19,9 +19,13 @@ import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.presentation.viewmodel.PhotoModel
+import javax.inject.Inject
 
 
-class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
+class PostRepositoryImpl @Inject constructor(
+    private val postDao: PostDao,
+    private val apiService: ApiService,
+) : PostRepository {
 
     override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
 
@@ -32,7 +36,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         try {
             while (true) {
                 delay(2_000L)
-                val response = PostsApi.service.getNewer(firstId)
+                val response = apiService.getNewer(firstId)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -56,7 +60,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.service.getAll()
+            val response = apiService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -86,7 +90,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 isLocal = true,
             )
             postDao.insert(PostEntity.fromDto(localPost))
-            val response = PostsApi.service.save(post)
+            val response = apiService.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -113,7 +117,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 attachment = Attachment(url = file.id)
             )
             postDao.insert(PostEntity.fromDto(localPost))
-            val response = PostsApi.service.save(post.copy(attachment = Attachment(url = file.id)))
+            val response = apiService.save(post.copy(attachment = Attachment(url = file.id)))
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -135,7 +139,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             val part = MultipartBody.Part.createFormData(
                 "file", model.file.name, model.file.asRequestBody()
             )
-            val response = PostsApi.service.uploadPhoto(part)
+            val response = apiService.uploadPhoto(part)
             return response.body() ?: throw ApiError(response.code(), response.message())
         } catch (e: IOException) {
             throw NetworkError
@@ -148,7 +152,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
 
     override suspend fun removeById(id: Long) {
         try {
-            val response = PostsApi.service.removeById(id)
+            val response = apiService.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -170,7 +174,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 isLocal = true,
             )
             postDao.insert(PostEntity.fromDto(localPost))
-            val response = with(PostsApi.service) {
+            val response = with(apiService) {
                 if (post.likedByMe) ::dislikeById else ::likeById
             }(post.id)
 
@@ -178,7 +182,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            postDao.insert(PostEntity.fromDto(body))
+            postDao.insert(PostEntity.fromDto(body.copy(visible = true)))
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {

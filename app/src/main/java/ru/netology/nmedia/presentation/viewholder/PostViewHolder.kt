@@ -61,11 +61,6 @@ class PostViewHolder(
 
                         mediaImageView.loadImageMedia(post.attachment.url)
                     }
-                    else -> {
-                        mediaImageView.setImageResource(R.mipmap.media)
-                        mediaTextView.text = mediaTextView.context.getString(R.string.media_image)
-                        media.visibility = View.VISIBLE
-                    }
                 }
             }
 

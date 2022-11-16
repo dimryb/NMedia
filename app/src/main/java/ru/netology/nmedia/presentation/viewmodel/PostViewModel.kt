@@ -1,56 +1,56 @@
 package ru.netology.nmedia.presentation.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.repository.PostRepository
-import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.domain.dto.Post
-import ru.netology.nmedia.domain.dto.Token
 import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import javax.inject.Inject
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
+private val empty = Post(
+    id = 0,
+    content = "",
+    author = "",
+    authorId = 0L,
+    authorAvatar = "",
+    likedByMe = false,
+    likes = 0,
+    published = ""
+)
 
-    private val empty = Post(
-        id = 0,
-        content = "",
-        author = "",
-        authorId = 0L,
-        authorAvatar = "",
-        likedByMe = false,
-        likes = 0,
-        published = ""
-    )
-
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(application).postDao())
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    private val appAuth: AppAuth,
+) : ViewModel() {
 
     val dataAll: LiveData<FeedModel> = dataAuth(repository.data)
     val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun dataAuth(repositoryData: Flow<List<Post>>): LiveData<FeedModel> =
-        AppAuth.getInstance()
+        appAuth
             .authStateFlow
             .flatMapLatest { (myId, _) ->
-            repositoryData
-                .map {
-                    FeedModel(
-                        it.map { post ->
-                            post.copy(ownerByMe = post.authorId == myId)
-                        }, it.isEmpty()
-                    )
-                }
-        }.asLiveData(Dispatchers.Default)
+                repositoryData
+                    .map { posts ->
+                        FeedModel(
+                            posts.map { it.copy(ownerByMe = it.authorId == myId) },
+                            posts.isEmpty()
+                        )
+                    }
+            }.asLiveData(Dispatchers.Default)
 
     val invisibleCount: LiveData<Int> =
         repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
@@ -124,12 +124,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun share(id: Long) {
+//    fun share(id: Long) {
 //        TODO("Not yet implemented")
 //        viewModelScope.launch {
 //            repository.shareById(id)
 //        }
-    }
+//    }
 
     fun removeById(id: Long) {
         viewModelScope.launch {
@@ -148,9 +148,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _postCreated.value = Unit
                 try {
                     _photo.value?.let { photoModel ->
-                        repository.saveWithAttachment(post, photoModel)
+//                        repository.saveWithAttachment(post, photoModel)
                     } ?: run {
-                        repository.save(post)
+//                        repository.save(post)
                     }
                     _state.value = FeedModelState.Idle
                 } catch (e: Exception) {
