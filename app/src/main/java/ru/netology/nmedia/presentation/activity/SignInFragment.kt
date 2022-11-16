@@ -33,7 +33,7 @@ class SignInFragment : Fragment() {
     private fun setupClickListeners() {
         with(binding) {
             signInButton.setOnClickListener {
-                viewModel.updateUser(
+                viewModel.authUser(
                     fieldLogin.text.toString(),
                     fieldPassword.text.toString()
                 )

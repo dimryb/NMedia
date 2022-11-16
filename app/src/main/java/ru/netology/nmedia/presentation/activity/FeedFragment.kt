@@ -136,6 +136,10 @@ class FeedFragment : Fragment() {
 //            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
 //            println("Invisible count: $it")
 //        }
+
+        authViewModel.refresh.observe(viewLifecycleOwner) {
+            adapter.refresh()
+        }
     }
 
     private fun setupListeners() {
