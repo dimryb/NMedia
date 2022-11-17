@@ -94,15 +94,6 @@ class FeedFragment : Fragment() {
         viewModel.refresh()
 
         binding.postsList.adapter = adapter
-//        viewModel.data.observe(viewLifecycleOwner) { state ->
-//            val newPost = state.posts.size > adapter.currentList.size
-//            adapter.submitList(state.posts) {
-//                if (newPost) {
-//                    binding.postsList.scrollToPosition(0)
-//                }
-//            }
-//            binding.emptyText.isVisible = state.empty
-//        }
 
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest {
@@ -128,15 +119,6 @@ class FeedFragment : Fragment() {
             launchEditPost()
         }
 
-//        viewModel.newerCount.observe(viewLifecycleOwner) {
-//            //println("Newer count: $it")
-//        }
-
-//        viewModel.invisibleCount.observe(viewLifecycleOwner) {
-//            binding.newPostsButton.visibility = if (it > 0) View.VISIBLE else View.INVISIBLE
-//            println("Invisible count: $it")
-//        }
-
         authViewModel.refresh.observe(viewLifecycleOwner) {
             adapter.refresh()
         }
@@ -155,7 +137,6 @@ class FeedFragment : Fragment() {
         }
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
-            //binding.swipeRefresh.isRefreshing = false
         }
         binding.newPostsButton.setOnClickListener {
             viewModel.showNewPosts()
