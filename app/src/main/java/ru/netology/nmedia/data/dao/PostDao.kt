@@ -58,4 +58,7 @@ interface PostDao {
     """
     )
     suspend fun shareById(id: Long)
+
+    @Query("DELETE FROM PostEntity")
+    suspend fun clear()
 }

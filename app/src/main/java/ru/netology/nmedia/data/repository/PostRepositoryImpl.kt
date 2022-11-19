@@ -9,6 +9,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.data.api.ApiService
 import ru.netology.nmedia.data.dao.PostDao
+import ru.netology.nmedia.data.dao.PostRemoteKeyDao
+import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Attachment
@@ -24,13 +26,20 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
     private val apiService: ApiService,
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: AppDb,
 ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = 10, enablePlaceholders = false),
         pagingSourceFactory = { postDao.getPagingSource() },
-        remoteMediator = PostRemoteMediator(service = apiService, postDao = postDao)
+        remoteMediator = PostRemoteMediator(
+            service = apiService,
+            postDao = postDao,
+            postRemoteKeyDao = postRemoteKeyDao,
+            appDb = appDb,
+        )
     ).flow
         .map { it.map(PostEntity::toDto) }
 
