@@ -1,5 +1,6 @@
 package ru.netology.nmedia.presentation.activity
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -36,9 +37,8 @@ class NewPostFragment : Fragment() {
                 ImagePicker.RESULT_ERROR -> {
                     Toast.makeText(requireContext(), "Image pick error", Toast.LENGTH_SHORT).show()
                 }
-                else -> {
-                    val uri = it.data?.data ?: return@registerForActivityResult
-                    viewModel.changePhoto(uri, uri.toFile())
+                Activity.RESULT_OK -> {
+                    viewModel.changePhoto(it.data?.data)
                 }
             }
         }
@@ -110,7 +110,7 @@ class NewPostFragment : Fragment() {
         }
 
         binding.removePhoto.setOnClickListener {
-            viewModel.changePhoto(null, null)
+            viewModel.changePhoto(null)
         }
 
     }
