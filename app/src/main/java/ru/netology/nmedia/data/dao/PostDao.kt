@@ -20,7 +20,7 @@ interface PostDao {
     fun getPagingSource(): PagingSource<Int, PostEntity>
 
     @Query("SELECT MAX(id) FROM PostEntity")
-    suspend fun getMaxId(): Long
+    suspend fun getMaxId(): Long?
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(post: PostEntity)
@@ -61,4 +61,10 @@ interface PostDao {
 
     @Query("DELETE FROM PostEntity")
     suspend fun clear()
+
+    @Query("DELETE FROM PostEntity WHERE id < :id")
+    suspend fun clearBefore(id: Long)
+
+    @Query("DELETE FROM PostEntity WHERE id > :id")
+    suspend fun clearAfter(id: Long)
 }

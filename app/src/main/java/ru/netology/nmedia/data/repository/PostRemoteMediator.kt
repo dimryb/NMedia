@@ -19,20 +19,23 @@ class PostRemoteMediator(
     private val appDb: AppDb,
 ) : RemoteMediator<Int, PostEntity>() {
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, PostEntity>): MediatorResult {
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, PostEntity>
+    ): MediatorResult {
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    service.getLatest(state.config.pageSize)
+                    //service.getLatest(state.config.pageSize)
+                    val maxId = postRemoteKeyDao.max() ?: 0
+                    service.getAfter(maxId, state.config.pageSize)
                 }
                 LoadType.PREPEND -> {
                     return MediatorResult.Success(true)
-//                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(false)
-//                    service.getBefore(id, state.config.pageSize)
                 }
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
-                    service.getAfter(id, state.config.pageSize)
+                    service.getBefore(id, state.config.pageSize)
                 }
             }
 
@@ -45,19 +48,24 @@ class PostRemoteMediator(
                 response.message()
             )
 
+            if (body.isEmpty()) return MediatorResult.Success(false)
+
             appDb.withTransaction {
                 when (loadType) {
                     LoadType.REFRESH -> {
-                        postDao.clear()
+                        val afterId = body.first().id
+                        val beforeId = body.last().id
+                        val max = postRemoteKeyDao.max() ?: afterId
+                        val min = postRemoteKeyDao.min() ?: beforeId
                         postRemoteKeyDao.insert(
                             listOf(
                                 PostRemoteKeyEntity(
                                     PostRemoteKeyEntity.KeyType.AFTER,
-                                    body.first().id,
+                                    if (afterId > max) afterId else max,
                                 ),
                                 PostRemoteKeyEntity(
                                     PostRemoteKeyEntity.KeyType.BEFORE,
-                                    body.last().id,
+                                    if (beforeId < min) beforeId else min,
                                 )
                             )
                         )
