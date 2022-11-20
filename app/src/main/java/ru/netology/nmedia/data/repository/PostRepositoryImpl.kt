@@ -15,9 +15,7 @@ import ru.netology.nmedia.data.db.AppDb
 import ru.netology.nmedia.data.entity.PostEntity
 import ru.netology.nmedia.data.entity.toEntity
 import ru.netology.nmedia.domain.Attachment
-import ru.netology.nmedia.domain.dto.Media
-import ru.netology.nmedia.domain.dto.MediaUpload
-import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.*
 import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
@@ -25,6 +23,7 @@ import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.presentation.viewmodel.PhotoModel
 import javax.inject.Inject
+import kotlin.random.Random
 
 
 class PostRepositoryImpl @Inject constructor(
@@ -35,7 +34,7 @@ class PostRepositoryImpl @Inject constructor(
 ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 10),
         pagingSourceFactory = postDao::getPagingSource,
         remoteMediator = PostRemoteMediator(
@@ -46,6 +45,13 @@ class PostRepositoryImpl @Inject constructor(
         )
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
+            .insertSeparators { previous: Post?, _ ->
+                if (previous?.id?.rem(5) == 0L) {
+                    Ad(Random.nextLong(), "figma.jpg")
+                } else {
+                    null
+            }
+            }
     }
 
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {

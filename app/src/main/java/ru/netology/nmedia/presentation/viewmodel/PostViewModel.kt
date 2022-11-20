@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
+import ru.netology.nmedia.domain.dto.FeedItem
 import ru.netology.nmedia.domain.dto.MediaUpload
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.model.FeedModelState
@@ -44,19 +46,22 @@ class PostViewModel @Inject constructor(
     private val appAuth: AppAuth,
 ) : ViewModel() {
 
-    val data: Flow<PagingData<Post>> = dataAuth(repository.data)
-//    val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
+    private val cached = repository
+        .data
+        .cachedIn(viewModelScope)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun dataAuth(repositoryData: Flow<PagingData<Post>>): Flow<PagingData<Post>> =
-        appAuth
-            .authStateFlow
-            .flatMapLatest { (myId, _) ->
-                repositoryData
-                    .map { posts ->
-                            posts.map { it.copy(ownerByMe = it.authorId == myId) }
+    val data: Flow<PagingData<FeedItem>> = appAuth.authStateFlow
+        .flatMapLatest { (myId, _) ->
+            cached.map { pagingData ->
+                pagingData.map { post ->
+                    if (post is Post) {
+                        post.copy(ownerByMe = post.authorId == myId)
+                    } else {
+                        post
                     }
-            }.flowOn(Dispatchers.Default)
+                }
+            }
+        }
 
 //    val invisibleCount: LiveData<Int> =
 //        repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
