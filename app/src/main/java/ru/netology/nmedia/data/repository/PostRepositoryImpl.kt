@@ -1,5 +1,8 @@
 package ru.netology.nmedia.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,10 +30,17 @@ class PostRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
 ) : PostRepository {
 
-    override val data = postDao.getAll().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+    override val data: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = {
+            PostPagingSource(
+                apiService
+            )
+        }
+    ).flow
 
-    override val dataVisible =
-        postDao.getVisible().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
+//    override val dataVisible =
+//        postDao.getVisible().map(List<PostEntity>::toDto).flowOn(Dispatchers.Default)
 
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {

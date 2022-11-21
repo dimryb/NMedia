@@ -1,18 +1,23 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.net.Uri
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.domain.dto.Post
-import ru.netology.nmedia.presentation.model.FeedModel
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
@@ -35,34 +40,31 @@ class PostViewModel @Inject constructor(
     private val appAuth: AppAuth,
 ) : ViewModel() {
 
-    val dataAll: LiveData<FeedModel> = dataAuth(repository.data)
-    val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
+    val data: Flow<PagingData<Post>> = dataAuth(repository.data)
+//    val dataVisible: LiveData<FeedModel> = dataAuth(repository.dataVisible)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun dataAuth(repositoryData: Flow<List<Post>>): LiveData<FeedModel> =
+    private fun dataAuth(repositoryData: Flow<PagingData<Post>>): Flow<PagingData<Post>> =
         appAuth
             .authStateFlow
             .flatMapLatest { (myId, _) ->
                 repositoryData
                     .map { posts ->
-                        FeedModel(
-                            posts.map { it.copy(ownerByMe = it.authorId == myId) },
-                            posts.isEmpty()
-                        )
+                            posts.map { it.copy(ownerByMe = it.authorId == myId) }
                     }
-            }.asLiveData(Dispatchers.Default)
+            }.flowOn(Dispatchers.Default)
 
-    val invisibleCount: LiveData<Int> =
-        repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
+//    val invisibleCount: LiveData<Int> =
+//        repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
 
     private val _state = MutableLiveData<FeedModelState>()
     val state: LiveData<FeedModelState>
         get() = _state
 
-    val newerCount: LiveData<Int> = dataAll.switchMap {
-        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
-            .asLiveData(Dispatchers.Default)
-    }
+//    val newerCount: LiveData<Int> = data.switchMap {
+//        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
+//            .asLiveData(Dispatchers.Default)
+//    }
 
     val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()

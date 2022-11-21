@@ -47,6 +47,10 @@ class AuthViewModel @Inject constructor(
     val signOutAsk: LiveData<Boolean>
         get() = _signOutAsk
 
+    private val _refresh = MutableLiveData<Unit>()
+    val refresh: LiveData<Unit>
+        get() = _refresh
+
     var signOutAskMode = false
 
     fun signIn() {
@@ -57,6 +61,7 @@ class AuthViewModel @Inject constructor(
         println("Sign Out")
         _signOutAsk.value = false
         appAuth.removeAuth()
+        _refresh.value = Unit
     }
 
     fun signOutAsk() {
@@ -71,7 +76,7 @@ class AuthViewModel @Inject constructor(
         _signUp.value = Unit
     }
 
-    fun updateUser(login: String, pass: String) {
+    fun authUser(login: String, pass: String) {
         println("Sign In: Login: $login, Password: $pass ")
         viewModelScope.launch {
             try {
@@ -80,6 +85,7 @@ class AuthViewModel @Inject constructor(
                 _loginError.value = Unit
             }
         }
+        _refresh.value = Unit
     }
 
     fun registerUser(login: String, pass: String, repeatPass: String, name: String) {
@@ -95,5 +101,6 @@ class AuthViewModel @Inject constructor(
                 _registerError.value = Unit
             }
         }
+        _refresh.value = Unit
     }
 }
