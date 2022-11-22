@@ -1,6 +1,7 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
+import ru.netology.nmedia.domain.dto.MediaUpload
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.util.SingleLiveEvent
@@ -33,6 +35,8 @@ private val empty = Post(
     likes = 0,
     published = ""
 )
+
+private val noPhoto = PhotoModel()
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
@@ -149,11 +153,9 @@ class PostViewModel @Inject constructor(
             viewModelScope.launch {
                 _postCreated.value = Unit
                 try {
-                    _photo.value?.let { photoModel ->
-                        repository.saveWithAttachment(post, photoModel)
-                    } ?: run {
-                        repository.save(post)
-                    }
+                    repository.save(
+                        post, _photo.value?.uri?.let { MediaUpload(it.toFile()) }
+                    )
                     _state.value = FeedModelState.Idle
                 } catch (e: Exception) {
                     _state.value = FeedModelState.Error
@@ -161,6 +163,7 @@ class PostViewModel @Inject constructor(
             }
         }
         edited.value = empty
+        _photo.value = noPhoto
     }
 
     fun edit(post: Post) {
@@ -178,11 +181,7 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun changePhoto(uri: Uri?, toFile: File?) {
-        _photo.value = if (uri != null && toFile != null) {
-            PhotoModel(uri, toFile)
-        } else {
-            null
-        }
+    fun changePhoto(uri: Uri?) {
+        _photo.value = PhotoModel(uri)
     }
 }

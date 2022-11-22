@@ -136,7 +136,7 @@ class FeedFragment : Fragment() {
             viewModel.loadPosts()
         }
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.refresh()
+            adapter.refresh()
         }
         binding.newPostsButton.setOnClickListener {
             viewModel.showNewPosts()
