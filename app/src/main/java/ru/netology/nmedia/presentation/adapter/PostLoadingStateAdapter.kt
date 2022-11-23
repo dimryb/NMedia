@@ -23,7 +23,7 @@ class PostLoadingStateAdapter (
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): PostLoadingViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return PostLoadingViewHolder(
-            ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            ItemLoadingBinding.inflate(layoutInflater, parent, false),
             onInteractionListener
         )
     }
