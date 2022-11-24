@@ -21,7 +21,10 @@ import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
-import ru.netology.nmedia.presentation.viewmodel.PhotoModel
+import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.util.TimeUtils
+import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -35,7 +38,7 @@ class PostRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<FeedItem>> = Pager(
-        config = PagingConfig(pageSize = 10),
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
         pagingSourceFactory = postDao::getPagingSource,
         remoteMediator = PostRemoteMediator(
             service = apiService,
@@ -45,14 +48,43 @@ class PostRepositoryImpl @Inject constructor(
         )
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
-            .insertSeparators { previous: Post?, _ ->
-                if (previous?.id?.rem(5) == 0L) {
-                    Ad(Random.nextLong(), "figma.jpg")
-                } else {
-                    null
+            .insertSeparators { previous: Post?, next: Post? ->
+                insertTimingSeparator(previous, next)
             }
+            .insertSeparators { previous: FeedItem?, _ ->
+                if (previous is Post) {
+                    if (previous.id.rem(5) == 0L) {
+                        Ad(Random.nextLong(), "figma.jpg")
+                    } else {
+                        null
+                    }
+                } else null
             }
     }
+
+    private fun insertTimingSeparator(previous: Post?, next: Post?): TimingSeparator? {
+        if (previous == null) {
+            next?.published?.let {
+                return TimingSeparator(Random.nextLong(), separatorText(it.toLong()))
+            }
+        }
+        return null
+//        val timingSeparator = previous?.published?.let {
+//            next?.published?.let {
+//                TimingSeparator(Random.nextLong(), "Сейчас")
+//            }
+//        }
+//        return timingSeparator
+    }
+
+    private fun separatorText(seconds: Long): String =
+        if (TimeUtils.today(seconds)) {
+            "Сегодня"
+        } else if (TimeUtils.yesterday(seconds)) {
+            "Вчера"
+        } else {
+            "На прошлой неделе"
+        }
 
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {

@@ -10,13 +10,16 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardAdBinding
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.CardTestBinding
+import ru.netology.nmedia.databinding.CardTimingBinding
 import ru.netology.nmedia.domain.dto.Ad
 import ru.netology.nmedia.domain.dto.FeedItem
 import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.domain.dto.TimingSeparator
 import ru.netology.nmedia.presentation.view.load
 import ru.netology.nmedia.presentation.viewholder.AdViewHolder
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.viewholder.PostViewHolder
+import ru.netology.nmedia.presentation.viewholder.TimingSeparatorViewHolder
 
 class PostAdapter(
     private val onInteractionListener: OnInteractionListener
@@ -26,6 +29,7 @@ class PostAdapter(
         when (getItem(position)) {
             is Ad -> R.layout.card_ad
             is Post -> R.layout.card_post
+            is TimingSeparator -> R.layout.card_timing
             //null -> error("unknown item type")
             null -> {
                 println("getItemViewType: item type null")
@@ -45,6 +49,11 @@ class PostAdapter(
                     CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 AdViewHolder(binding)
             }
+            R.layout.card_timing -> {
+                val binding =
+                    CardTimingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TimingSeparatorViewHolder(binding)
+            }
             R.layout.card_test -> {
                 val binding =
                     CardTestBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -58,6 +67,7 @@ class PostAdapter(
         when (val item = getItem(position)) {
             is Ad -> (holder as? AdViewHolder)?.bind(item)
             is Post -> (holder as? PostViewHolder)?.bind(item)
+            is TimingSeparator -> (holder as? TimingSeparatorViewHolder)?.bind(item)
             //null -> error("unknown view type")
             null -> {
                 println("onCreateViewHolder: null")
