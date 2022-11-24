@@ -5,12 +5,15 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardAdBinding
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.databinding.CardTestBinding
 import ru.netology.nmedia.domain.dto.Ad
 import ru.netology.nmedia.domain.dto.FeedItem
 import ru.netology.nmedia.domain.dto.Post
+import ru.netology.nmedia.presentation.view.load
 import ru.netology.nmedia.presentation.viewholder.AdViewHolder
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.viewholder.PostViewHolder
@@ -23,18 +26,30 @@ class PostAdapter(
         when (getItem(position)) {
             is Ad -> R.layout.card_ad
             is Post -> R.layout.card_post
-            null -> error("unknown item type")
+            //null -> error("unknown item type")
+            null -> {
+                println("getItemViewType: item type null")
+                R.layout.card_test
+            }
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
             R.layout.card_post -> {
-                val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                val binding =
+                    CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 PostViewHolder(binding, onInteractionListener)
             }
             R.layout.card_ad -> {
-                val binding = CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                val binding =
+                    CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 AdViewHolder(binding)
+            }
+            R.layout.card_test -> {
+                val binding =
+                    CardTestBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                println("onCreateViewHolder: TestViewHolder")
+                TestViewHolder(binding)
             }
             else -> error("unknown view type: $viewType")
         }
@@ -43,7 +58,19 @@ class PostAdapter(
         when (val item = getItem(position)) {
             is Ad -> (holder as? AdViewHolder)?.bind(item)
             is Post -> (holder as? PostViewHolder)?.bind(item)
-            null ->  error("unknown view type")
+            //null -> error("unknown view type")
+            null -> {
+                println("onCreateViewHolder: null")
+                (holder as? TestViewHolder)?.bind()
+            }
         }
+    }
+}
+
+class TestViewHolder(
+    private val binding: CardTestBinding,
+) : RecyclerView.ViewHolder(binding.root){
+    fun bind(){
+        binding.root
     }
 }

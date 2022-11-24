@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -105,6 +106,10 @@ class FeedFragment : Fragment() {
                     adapter.retry()
                 }
             }),
+        )
+
+        binding.postsList.addItemDecoration(
+            DividerItemDecoration(binding.postsList.context, DividerItemDecoration.VERTICAL)
         )
 
         lifecycleScope.launchWhenCreated {
