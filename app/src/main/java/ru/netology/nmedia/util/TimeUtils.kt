@@ -29,32 +29,34 @@ object TimeUtils {
         }
     }
 
-    fun currentTime(): LocalDateTime =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LocalDateTime.now()
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
-
-    fun currentSeconds(): Long =
+    private fun currentSeconds(): Long =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             OffsetDateTime.now().toEpochSecond()
         } else {
             TODO("VERSION.SDK_INT < O")
         }
 
-    fun secondsToHours(seconds: Long): Long =
-        seconds / SEC_PER_MIN / MIN_PER_HOUR
-
-    fun today(seconds: Long): Boolean = secondsToHours(currentSeconds() - seconds) < HOURS_PER_DAY
-
-    fun yesterday(seconds: Long): Boolean {
-        val hoursDif = secondsToHours(currentSeconds() - seconds)
-        return (hoursDif >= HOURS_PER_DAY)&&(hoursDif < 2 * HOURS_PER_DAY)
-    }
+    fun timePeriod(seconds: Long): TimePeriod =
+        when (currentSeconds() - seconds) {
+            in 0..SEC_PER_HOUR -> TimePeriod.THIS_HOUR
+            in SEC_PER_HOUR..SEC_PER_TWO_HOUR -> TimePeriod.HOURS_AGO
+            in SEC_PER_TWO_HOUR..SEC_PER_DAY -> TimePeriod.TODAY
+            in SEC_PER_DAY..SEC_PER_TWO_DAY -> TimePeriod.YESTERDAY
+            else -> TimePeriod.LAST_WEAK
+        }
 
 
     private const val SEC_PER_MIN = 60L
-    private const val MIN_PER_HOUR = 60L
-    private const val HOURS_PER_DAY = 24L
+    private const val SEC_PER_HOUR = SEC_PER_MIN * 60L
+    private const val SEC_PER_TWO_HOUR = SEC_PER_HOUR * 2L
+    private const val SEC_PER_DAY = SEC_PER_HOUR * 24L
+    private const val SEC_PER_TWO_DAY = SEC_PER_DAY * 2L
+
+    enum class TimePeriod {
+        THIS_HOUR,
+        HOURS_AGO,
+        TODAY,
+        YESTERDAY,
+        LAST_WEAK,
+    }
 }
