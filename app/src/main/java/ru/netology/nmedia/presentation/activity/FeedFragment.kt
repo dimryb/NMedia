@@ -19,6 +19,7 @@ import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.domain.dto.Post
 import ru.netology.nmedia.presentation.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.presentation.adapter.PostAdapter
+import ru.netology.nmedia.presentation.adapter.PostLoadingStateAdapter
 import ru.netology.nmedia.presentation.model.FeedModelState
 import ru.netology.nmedia.presentation.viewholder.OnInteractionListener
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
@@ -93,7 +94,18 @@ class FeedFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.refresh()
 
-        binding.postsList.adapter = adapter
+        binding.postsList.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PostLoadingStateAdapter( object : PostLoadingStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+            footer = PostLoadingStateAdapter( object : PostLoadingStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+        )
 
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest {
@@ -145,8 +157,6 @@ class FeedFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest {
                 binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
-                        || it.append is LoadState.Loading
-                        || it.prepend is LoadState.Loading
             }
         }
     }

@@ -4,9 +4,18 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ru.netology.nmedia.domain.Attachment
 
+sealed class FeedItem{
+    abstract val id: Long
+}
+
+data class Ad(
+    override val id: Long,
+    val image: String,
+) : FeedItem()
+
 @Parcelize
 data class Post(
-    val id: Long = 0,
+    override val id: Long = 0,
     val author: String,
     val authorId: Long,
     val authorAvatar: String,
@@ -22,5 +31,5 @@ data class Post(
 
     val isLocal: Boolean = false,
     val visible: Boolean = true,
-) : Parcelable
+) : Parcelable, FeedItem()
 

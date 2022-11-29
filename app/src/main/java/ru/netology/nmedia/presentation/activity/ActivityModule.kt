@@ -12,11 +12,9 @@ import javax.inject.Singleton
 @Module
 class ActivityModule {
 
-    @Singleton
     @Provides
     fun provideFirebaseMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
 
-    @Singleton
     @Provides
     fun provideGoogleApiAvailability(): GoogleApiAvailability = GoogleApiAvailability.getInstance()
 }
