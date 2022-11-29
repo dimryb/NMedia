@@ -11,6 +11,8 @@ import ru.netology.nmedia.domain.enumeration.AttachmentType
 import ru.netology.nmedia.presentation.util.CounterFormatter
 import ru.netology.nmedia.presentation.view.loadAuthorAvatar
 import ru.netology.nmedia.presentation.view.loadImageMedia
+import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.util.TimeUtils
 
 class PostViewHolder(
     private val binding: CardPostBinding,
@@ -40,7 +42,8 @@ class PostViewHolder(
     private fun setContent(cardPostBinding: CardPostBinding, post: Post) {
         with(cardPostBinding) {
             authorTextView.text = post.author
-            publishedTextView.text = post.published
+            val dateTime = TimeUtils.dateTimeFromEpochSecond(post.published)
+            publishedTextView.text = TimeUtils.dataFormatted(dateTime)
             postTextView.text = post.content
             likesButton.text = post.likes.toString()
             likesButton.isChecked = post.likedByMe

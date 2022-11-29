@@ -13,6 +13,11 @@ data class Ad(
     val image: String,
 ) : FeedItem()
 
+data class TimingSeparator(
+    override val id: Long,
+    val text: String,
+) : FeedItem()
+
 @Parcelize
 data class Post(
     override val id: Long = 0,

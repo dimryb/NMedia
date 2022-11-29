@@ -21,7 +21,11 @@ import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
-import ru.netology.nmedia.presentation.viewmodel.PhotoModel
+import ru.netology.nmedia.util.TimeUtils
+import ru.netology.nmedia.util.TimeUtils.timePeriod
+import ru.netology.nmedia.util.TimeUtils.TimePeriod.*
+import ru.netology.nmedia.util.TimeUtils.TimePeriod
+import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -35,7 +39,7 @@ class PostRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<FeedItem>> = Pager(
-        config = PagingConfig(pageSize = 10),
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
         pagingSourceFactory = postDao::getPagingSource,
         remoteMediator = PostRemoteMediator(
             service = apiService,
@@ -45,14 +49,63 @@ class PostRepositoryImpl @Inject constructor(
         )
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
-            .insertSeparators { previous: Post?, _ ->
-                if (previous?.id?.rem(5) == 0L) {
-                    Ad(Random.nextLong(), "figma.jpg")
-                } else {
-                    null
+            .insertSeparators { previous: Post?, next: Post? ->
+                insertTimingSeparator(previous, next)
             }
+            .insertSeparators { previous: FeedItem?, _ ->
+                if (previous is Post) {
+                    if (previous.id.rem(5) == 0L) {
+                        Ad(Random.nextLong(), "figma.jpg")
+                    } else {
+                        null
+                    }
+                } else null
             }
     }
+
+    private fun insertTimingSeparator(previous: Post?, next: Post?): TimingSeparator? {
+        if (previous == null) {
+            next?.published?.let { nextPublished ->
+                return TimingSeparator(
+                    Random.nextLong(),
+                    separatorText(timePeriod(nextPublished.toLong()))
+                )
+            }
+        }
+
+        next?.published?.let { nextPublished ->
+            previous?.published?.let { previousPublished ->
+                return boundaryTimePeriods(previousPublished.toLong(), nextPublished.toLong())
+            }
+        }
+
+        return null
+    }
+
+    private fun boundaryTimePeriods(previousSeconds: Long, nextSeconds: Long): TimingSeparator? {
+        val previousPeriod = timePeriod(previousSeconds)
+        val nextPeriod = timePeriod(nextSeconds)
+
+        return if (
+            (previousPeriod == THIS_HOUR && nextPeriod == HOURS_AGO) ||
+            (previousPeriod == HOURS_AGO && nextPeriod == TODAY) ||
+            (previousPeriod == TODAY && nextPeriod == YESTERDAY) ||
+            (previousPeriod == YESTERDAY && nextPeriod == LAST_WEAK)
+        ) {
+            nextPeriod
+        } else {
+            null
+        }?.let { TimingSeparator(Random.nextLong(), separatorText(it)) }
+    }
+
+    private fun separatorText(timePeriod: TimePeriod): String =
+        when (timePeriod) {
+            THIS_HOUR -> "Сейчас"
+            HOURS_AGO -> "Час назад"
+            TODAY -> "Сегодня"
+            YESTERDAY -> "Вчера"
+            LAST_WEAK -> "На прошлой неделе"
+        }
 
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
