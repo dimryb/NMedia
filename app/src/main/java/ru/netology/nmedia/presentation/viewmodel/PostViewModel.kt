@@ -51,29 +51,11 @@ class PostViewModel @Inject constructor(
         .cachedIn(viewModelScope)
 
     val data: Flow<PagingData<FeedItem>> = appAuth.authStateFlow
-        .flatMapLatest { (myId, _) ->
-            cached.map { pagingData ->
-                pagingData.map { post ->
-                    if (post is Post) {
-                        post.copy(ownerByMe = post.authorId == myId)
-                    } else {
-                        post
-                    }
-                }
-            }
-        }
-
-//    val invisibleCount: LiveData<Int> =
-//        repository.data.map { posts -> posts.count { !it.visible } }.asLiveData(Dispatchers.Default)
+        .flatMapLatest { cached }
 
     private val _state = MutableLiveData<FeedModelState>()
     val state: LiveData<FeedModelState>
         get() = _state
-
-//    val newerCount: LiveData<Int> = data.switchMap {
-//        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
-//            .asLiveData(Dispatchers.Default)
-//    }
 
     val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
