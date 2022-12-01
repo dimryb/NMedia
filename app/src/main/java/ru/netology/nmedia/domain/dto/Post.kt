@@ -3,6 +3,7 @@ package ru.netology.nmedia.domain.dto
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ru.netology.nmedia.domain.Attachment
+import ru.netology.nmedia.util.TimeUtils.TimePeriod
 
 sealed class FeedItem{
     abstract val id: Long
@@ -15,7 +16,7 @@ data class Ad(
 
 data class TimingSeparator(
     override val id: Long,
-    val text: String,
+    val period: TimePeriod,
 ) : FeedItem()
 
 @Parcelize

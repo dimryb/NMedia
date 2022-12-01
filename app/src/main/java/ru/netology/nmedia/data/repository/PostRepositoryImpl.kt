@@ -68,7 +68,7 @@ class PostRepositoryImpl @Inject constructor(
             next?.published?.let { nextPublished ->
                 return TimingSeparator(
                     Random.nextLong(),
-                    separatorText(timePeriod(nextPublished.toLong()))
+                    timePeriod(nextPublished.toLong())
                 )
             }
         }
@@ -95,17 +95,8 @@ class PostRepositoryImpl @Inject constructor(
             nextPeriod
         } else {
             null
-        }?.let { TimingSeparator(Random.nextLong(), separatorText(it)) }
+        }?.let { TimingSeparator(Random.nextLong(), it) }
     }
-
-    private fun separatorText(timePeriod: TimePeriod): String =
-        when (timePeriod) {
-            THIS_HOUR -> "Сейчас"
-            HOURS_AGO -> "Час назад"
-            TODAY -> "Сегодня"
-            YESTERDAY -> "Вчера"
-            LAST_WEAK -> "На прошлой неделе"
-        }
 
     override fun getNewerCount(firstId: Long): Flow<Int> = flow {
         try {
