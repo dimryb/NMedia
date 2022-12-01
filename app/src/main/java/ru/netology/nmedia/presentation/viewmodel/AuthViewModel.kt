@@ -81,11 +81,11 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _token.value = repository.authUser(login, pass)
+                _refresh.value = Unit
             } catch (e: Exception) {
                 _loginError.value = Unit
             }
         }
-        _refresh.value = Unit
     }
 
     fun registerUser(login: String, pass: String, repeatPass: String, name: String) {
